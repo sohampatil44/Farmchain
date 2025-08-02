@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmChain - Blockchain-Powered Machinery Rental</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    /* Base Styling */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #e8f0e8; /* Lighter green-gray for freshness */
+      color: #1a3c1a; /* Deep green text */
+      overflow-x: hidden;
+      height: 100vh;
+    }
+
+    /* Video Background */
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      opacity: 0.6; /* Slightly less intense */
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(26, 60, 26, 0.3), rgba(255, 255, 255, 0.2)); /* Softer gradient */
+      z-index: -1;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* Spread content */
+      align-items: center;
+      text-align: center;
+      padding: 3rem 2rem; /* More padding */
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem; /* Slightly smaller, less overwhelming */
+      font-weight: 700;
+      color: #2d552d; /* Earthy green */
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      animation: fadeInDown 1.5s ease-out;
+      margin-top: 2rem; /* Space from top */
+    }
+
+    .hero p {
+      font-size: 1.5rem; /* Slightly smaller */
+      font-weight: 300;
+      color: #fff;
+      max-width: 700px;
+      margin: 1rem auto;
+      animation: fadeInUp 2s ease-out;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes gentleFade {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.75rem 2rem; /* Smaller, compact */
+      font-size: 1.125rem; /* Less bulky */
+      font-weight: 500;
+      color: #fff;
+      background: #6b9b6b; /* Earthy green, no gold */
+      border: none;
+      border-radius: 30px; /* Softer curve */
+      text-decoration: none;
+      transition: all 0.3s ease;
+      animation: gentleFade 2s infinite ease-in-out;
+    }
+
+    .btn:hover {
+      background: #5a835a; /* Darker green */
+      transform: translateY(-3px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column; /* Stack vertically */
+      gap: 1rem; /* Tight spacing */
+      margin-bottom: 3rem; /* Space from bottom */
+    }
+
+    /* Feature Cards */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem; /* Tighter gap */
+      margin: 2rem 0; /* Less vertical space */
+      flex-wrap: wrap;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.95); /* Brighter */
+      border-radius: 12px;
+      padding: 1rem;
+      width: 250px; /* Smaller cards */
+      text-align: center;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeInUp 2s ease-out;
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem; /* Smaller */
+      font-weight: 500;
+      color: #1a3c1a;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem; /* Smaller */
+      color: #4a704a;
+    }
+
+    /* Testimonial */
+    .testimonial {
+      background: rgba(255, 245, 200, 0.9); /* Softer cream */
+      padding: 1.25rem;
+      border-radius: 8px;
+      max-width: 500px; /* Slightly smaller */
+      animation: fadeInUp 2.5s ease-out;
+    }
+
+    .testimonial p {
+      font-size: 1rem; /* Smaller */
+      font-style: italic;
+      color: #1a3c1a;
+    }
+
+    .testimonial span {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #4a704a;
+      font-weight: 500;
+    }
+
+    /* Starry Particles */
+    .particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      width: 3px; /* Smaller stars */
+      height: 3px;
+      background: rgba(255, 245, 200, 0.7); /* Creamy stars, no gold */
+      border-radius: 50%;
+      animation: drift 8s infinite linear;
+    }
+
+    @keyframes drift {
+      0% { transform: translateY(100vh); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-20vh); opacity: 0; }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2.5rem; }
+      .hero p { font-size: 1.125rem; }
+      .btn { padding: 0.5rem 1.5rem; font-size: 1rem; }
+      .feature-card { width: 100%; max-width: 220px; }
+      .button-container { gap: 0.75rem; margin-bottom: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <video class="video-background" autoplay muted loop>
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-tractor-working-on-field-515-large.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="hero">
+    <h1>FarmChain</h1>
+    <p>Rent machinery with ease using blockchain technology.</p>
+    
+    <div class="features">
+      <div class="feature-card">
+        <h3>Secure Rentals</h3>
+        <p>Blockchain keeps it safe and clear.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Save Money</h3>
+        <p>No middlemen, just fair prices.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Worldwide Reach</h3>
+        <p>Access gear from anywhere.</p>
+      </div>
+    </div>
+
+    <div class="testimonial">
+      <p>"FarmChain makes renting simple and affordable—game changer!"</p>
+      <span>- John Doe, Farmer</span>
+    </div>
+
+    <div class="button-container">
+      <a href="http://127.0.0.1:5500/frontend/index.html" class="btn">Get Started</a>
+      <a href="http://farmchain.streamlit.app/" class="btn">Don't know which machine? Check our recommendation</a>
+    </div>
+  </div>
+
+  <script>
+    // Generate Starry Particles
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 20;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 4 + 's';
+      particle.style.animationDuration = Math.random() * 4 + 4 + 's';
+      particlesContainer.appendChild(particle);
+    }
+  </script>
+</body>
+</html>

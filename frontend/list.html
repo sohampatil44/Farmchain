@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmChain - List Equipment</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f0;
+      color: #1a3c1a;
+      overflow-x: hidden;
+    }
+    .video-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      opacity: 0.8;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, rgba(26, 60, 26, 0.4), rgba(245, 215, 130, 0.3));
+      z-index: -1;
+    }
+    nav {
+      background: rgba(26, 60, 26, 0.9);
+      padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo img { width: 40px; height: 40px; }
+    .logo span {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #f5d782;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links a {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .nav-links a:hover { color: #f5d782; }
+    .connect-btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #1a3c1a;
+      background: #f5d782;
+      border: 2px solid #fff;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .connect-btn:hover {
+      background: #fff;
+      color: #1a3c1a;
+      transform: translateY(-3px);
+    }
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .hero {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: #f5d782;
+      text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      animation: fadeInDown 1.5s ease-out;
+    }
+    .hero p {
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #fff;
+      max-width: 800px;
+      margin: 1rem auto;
+      animation: fadeInUp 2s ease-out;
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .form-card {
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .form-card h2 {
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #1a3c1a;
+      margin-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1a3c1a;
+      margin-bottom: 0.3rem;
+      display: block;
+    }
+    .input-field, .select-field {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #4a704a;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      background: #fff;
+      color: #1a3c1a;
+      transition: border-color 0.3s ease;
+    }
+    .input-field:focus, .select-field:focus {
+      outline: none;
+      border-color: #f5d782;
+    }
+    .input-field::placeholder {
+      color: #4a704a;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #1a3c1a;
+      background: #f5d782;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .submit-btn:hover {
+      background: #fff;
+      transform: translateY(-3px);
+    }
+    .price-feedback {
+      margin-top: 0.3rem;
+      font-size: 0.75rem;
+    }
+    .price-feedback.valid { color: #1a3c1a; }
+    .price-feedback.invalid { color: #d9534f; }
+    .input-field.error {
+      border-color: #d9534f;
+    }
+  </style>
+</head>
+<body>
+  <video class="video-background" autoplay muted loop>
+    <source src="https://assets.mixkit.co/videos/preview/mixkit-tractor-working-on-field-515-large.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div>
+
+  <nav>
+    <div class="nav-container">
+      <div class="logo">
+        <img src="https://api.iconify.design/ph:tractor-bold.svg?color=%23f5d782" alt="Tractor icon"/>
+        <span>FarmChain</span>
+      </div>
+      <div class="flex items-center gap-6">
+        <div class="nav-links">
+          <a href="list.html">List Equipment</a>
+          <a href="rent.html">Rent Equipment</a>
+        </div>
+        <button id="connectWalletButton" class="connect-btn">Connect Wallet</button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <div class="hero">
+      <h1>List Your Equipment</h1>
+      <p>Add your machinery for rent on the blockchain.</p>
+    </div>
+
+    <div class="form-card">
+      <h2>Add Equipment</h2>
+      <form id="listingForm" class="space-y-4">
+        <div class="form-group">
+          <label for="equipmentType">Equipment Type</label>
+          <select id="equipmentType" class="select-field">
+            <option value="" disabled selected>Choose equipment type</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="rentPrice">Daily Rent (ETH)</label>
+          <input type="number" id="rentPrice" placeholder="e.g., 0.01" class="input-field" step="0.001" min="0.001" />
+          <p id="rentPriceFeedback" class="price-feedback hidden"></p>
+        </div>
+        <button type="submit" class="submit-btn">List Equipment</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
