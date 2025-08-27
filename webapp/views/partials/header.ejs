@@ -1,0 +1,21 @@
+<nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center">
+    <div class="text-xl font-bold">
+      <a href="/">FarmChain</a>
+    </div>
+  
+    <ul class="flex space-x-6 items-center">
+      <% if (session && session.userId) { %>
+        <li>Welcome, <span class="font-semibold"><%= session.userName %></span> (<%= session.role %>)</li>
+
+        <% if (session.role === "farmer") { %>
+          <li><a href="/farmer" class="hover:underline">Dashboard</a></li>
+        <% } else if (session.role === "seller") { %>
+          <li><a href="/seller" class="hover:underline">Dashboard</a></li>
+        <% } else if (session.role === "admin") { %>
+          <li><a href="/admin" class="hover:underline">Admin</a></li>
+        <% } %>
+
+        <li><a href="/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a></li>
+      <% } %>
+    </ul>
+</nav>

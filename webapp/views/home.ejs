@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-en="FarmChain - Empowering Farmers" data-mr="फार्मचेन - शेतकऱ्यांना सक्षम करणे">FarmChain - Empowering Farmers</title>
+  <meta name="description" content="FarmChain connects farmers, sellers, and admins to rent, sell, or manage farm equipment efficiently. | फार्मचेन शेतकरी, विक्रेते आणि प्रशासकांना जोडते.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f7f4ed; color: #2d2a26; }
+    [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    .section-padding { padding: 4rem 0; }
+    .btn {
+      background: linear-gradient(135deg, #2f855a, #68d391);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .btn:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .lang-btn { background: #e5e7eb; color: #2d2a26; padding: 0.5rem 1rem; border-radius: 0.5rem; }
+    .lang-btn.active { background: #2f855a; color: white; }
+    .card {
+      background: white;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(247,244,237,0.95); backdrop-filter: blur(4px); border-bottom: 1px solid #e5e7eb; }
+    .nav-link { color: #2d2a26; padding: 0.5rem 1rem; text-decoration: none; position: relative; }
+    .nav-link::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: linear-gradient(135deg, #2f855a, #68d391); transition: width 0.3s; }
+    .nav-link:hover::after { width: 100%; }
+    .mobile-menu { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #f7f4ed; padding: 1rem; }
+    .mobile-menu.active { display: block; }
+    @media (min-width: 768px) { .mobile-hidden { display: flex; } .mobile-menu-btn { display: none; } .md\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 767px) { .mobile-hidden { display: none; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="container flex justify-between items-center h-16">
+      <div class="flex items-center gap-2">
+        <i data-lucide="sprout" class="w-6 h-6 p-2 rounded-lg text-green-700 bg-green-100"></i>
+        <span class="text-xl font-bold" data-en="FarmChain" data-mr="फार्मचेन">FarmChain</span>
+      </div>
+      <div class="mobile-hidden items-center gap-6">
+        <a href="#features" class="nav-link" data-en="Features" data-mr="वैशिष्ट्ये">Features</a>
+        <a href="#testimonials" class="nav-link" data-en="Testimonials" data-mr="प्रशंसापत्रे">Testimonials</a>
+        <a href="#contact" class="nav-link" data-en="Contact" data-mr="संपर्क">Contact</a>
+        <button class="lang-btn" onclick="setLanguage('en')" data-lang="en">English</button>
+        <button class="lang-btn" onclick="setLanguage('mr')" data-lang="mr">मराठी</button>
+      </div>
+      <button class="mobile-menu-btn p-2" onclick="toggleMobileMenu()">
+        <i data-lucide="menu" id="menu-icon" class="w-6 h-6"></i>
+        <i data-lucide="x" id="close-icon" class="w-6 h-6 hidden"></i>
+      </button>
+      <div id="mobile-menu" class="mobile-menu">
+        <a href="#features" class="block p-2" data-en="Features" data-mr="वैशिष्ट्ये">Features</a>
+        <a href="#testimonials" class="block p-2" data-en="Testimonials" data-mr="प्रशंसापत्रे">Testimonials</a>
+        <a href="#contact" class="block p-2" data-en="Contact" data-mr="संपर्क">Contact</a>
+        <button class="lang-btn block p-2" onclick="setLanguage('en')" data-lang="en">English</button>
+        <button class="lang-btn block p-2" onclick="setLanguage('mr')" data-lang="mr">मराठी</button>
+      </div>
+    </div>
+  </nav>
+
+  <section class="min-h-screen flex items-center relative bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1920&q=80');">
+    <div class="absolute inset-0 bg-gradient-to-r from-black/50 to-black/20"></div>
+    <div class="container text-center text-white relative z-10">
+      <h1 class="text-5xl md:text-7xl font-bold mb-6" data-en="Empower Your Farm, Effortlessly" data-mr="आपले शेत सक्षम करा, सहजतेने">Empower Your Farm, Effortlessly</h1>
+      <p class="text-xl mb-8 max-w-3xl mx-auto" data-en="FarmChain connects farmers, sellers, and admins to rent, sell, or manage farm equipment efficiently." data-mr="फार्मचेन शेतकरी, विक्रेते आणि प्रशासकांना जोडते, उपकरणे भाड्याने देण्यासाठी, विक्रीसाठी किंवा व्यवस्थापनासाठी.">FarmChain connects farmers, sellers, and admins to rent, sell, or manage farm equipment efficiently.</p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center">
+        <a href="/farmer" class="btn" data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal <i data-lucide="tractor" class="w-5 h-5"></i></a>
+        <a href="/seller" class="btn" data-en="Seller Portal" data-mr="विक्रेता पोर्टल">Seller Portal <i data-lucide="users" class="w-5 h-5"></i></a>
+        <a href="/admin" class="btn" data-en="Admin Portal" data-mr="प्रशासक पोर्टल">Admin Portal <i data-lucide="settings" class="w-5 h-5"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section-padding">
+    <div class="container text-center">
+      <h2 class="text-4xl font-bold mb-6" data-en="Why Farmers Choose FarmChain" data-mr="शेतकरी फार्मचेन का निवडतात">Why Farmers Choose FarmChain</h2>
+      <p class="text-lg mb-12 max-w-2xl mx-auto text-gray-600" data-en="Built for agriculture, combining modern tech with farming needs." data-mr="शेतीसाठी तयार केलेले, आधुनिक तंत्रज्ञान आणि शेतीच्या गरजा एकत्रित करणारे.">Built for agriculture, combining modern tech with farming needs.</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="card">
+          <i data-lucide="wrench" class="w-8 h-8 text-green-600 mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2" data-en="Rent Equipment Easily" data-mr="उपकरणे सहज भाड्याने घ्या">Rent Equipment Easily</h3>
+          <p class="text-gray-600" data-en="Access verified tractors and tools with transparent pricing." data-mr="पारदर्शक किंमतीसह प्रमाणित ट्रॅक्टर आणि साधने मिळवा.">Access verified tractors and tools with transparent pricing.</p>
+        </div>
+        <div class="card">
+          <i data-lucide="trending-up" class="w-8 h-8 text-green-600 mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2" data-en="Sell & Grow Business" data-mr="विक्री करा आणि व्यवसाय वाढवा">Sell & Grow Business</h3>
+          <p class="text-gray-600" data-en="List equipment and reach thousands of farmers instantly." data-mr="उपकरणे यादी करा आणि हजारो शेतकऱ्यांपर्यंत त्वरित पोहोचा.">List equipment and reach thousands of farmers instantly.</p>
+        </div>
+        <div class="card">
+          <i data-lucide="shield" class="w-8 h-8 text-green-600 mb-4"></i>
+          <h3 class="text-xl font-semibold mb-2" data-en="Admin Control" data-mr="प्रशासकीय नियंत्रण">Admin Control</h3>
+          <p class="text-gray-600" data-en="Monitor activity with a comprehensive dashboard." data-mr="विस्तृत डॅशबोर्डसह क्रियाकलापांचे निरीक्षण करा.">Monitor activity with a comprehensive dashboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="section-padding bg-gray-100">
+    <div class="container text-center">
+      <h2 class="text-4xl font-bold mb-6" data-en="What Farmers Say" data-mr="शेतकरी काय म्हणतात">What Farmers Say</h2>
+      <p class="text-lg mb-12 max-w-2xl mx-auto text-gray-600" data-en="Join thousands who transformed their operations with FarmChain." data-mr="फार्मचेनसह आपले कार्य बदलणाऱ्या हजारो शेतकऱ्यांमध्ये सामील व्हा.">Join thousands who transformed their operations with FarmChain.</p>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="card">
+          <p class="text-gray-600 mb-4 italic" data-en="Renting tractors is easy and reliable. My efficiency increased!" data-mr="ट्रॅक्टर भाड्याने घेणे सोपे आणि विश्वसनीय आहे. माझी कार्यक्षमता वाढली!">Renting tractors is easy and reliable. My efficiency increased!</p>
+          <p class="font-semibold" data-en="Ramesh, Pune" data-mr="रमेश, पुणे">Ramesh, Pune</p>
+        </div>
+        <div class="card">
+          <p class="text-gray-600 mb-4 italic" data-en="Sold my harvester quickly with secure payments." data-mr="माझे हार्वेस्टर लवकर विकले, सुरक्षित पेमेंटसह.">Sold my harvester quickly with secure payments.</p>
+          <p class="font-semibold" data-en="Priya, Nashik" data-mr="प्रिया, नाशिक">Priya, Nashik</p>
+        </div>
+        <div class="card">
+          <p class="text-gray-600 mb-4 italic" data-en="Location-based matching saved me hours!" data-mr="स्थान-आधारीत जुळवणीमुळे माझ्या तासांची बचत झाली!">Location-based matching saved me hours!</p>
+          <p class="font-semibold" data-en="Rajesh, Kolhapur" data-mr="राजेश, कोल्हापूर">Rajesh, Kolhapur</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="section-padding bg-gradient-to-r from-green-600 to-green-500 text-white">
+    <div class="container text-center">
+      <h2 class="text-4xl font-bold mb-6" data-en="Ready to Get Started?" data-mr="सुरू करण्यास तयार आहात?">Ready to Get Started?</h2>
+      <p class="text-lg mb-8 max-w-2xl mx-auto" data-en="Join FarmChain to manage, rent, or sell equipment with confidence." data-mr="फार्मचेनमध्ये सामील व्हा आणि आत्मविश्वासाने उपकरणे व्यवस्थापित करा, भाड्याने घ्या किंवा विक्री करा.">Join FarmChain to manage, rent, or sell equipment with confidence.</p>
+      <div class="flex flex-col md:flex-row gap-4 justify-center">
+        <a href="/farmer" class="btn" data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal <i data-lucide="tractor" class="w-5 h-5"></i></a>
+        <a href="/seller" class="btn" data-en="Seller Portal" data-mr="विक्रेता पोर्टल">Seller Portal <i data-lucide="users" class="w-5 h-5"></i></a>
+      </div>
+      <p class="mt-8 text-lg" data-en="Need help? Contact us!" data-mr="मदत हवी आहे? आमच्याशी संपर्क साधा!">Need help? Contact us!</p>
+      <p><a href="tel:+911234567890" class="underline">+91 12345 67890</a> | <a href="mailto:support@farmchain.com" class="underline" data-en="support@farmchain.com" data-mr="support@farmchain.com">support@farmchain.com</a></p>
+    </div>
+  </section>
+
+  <footer class="bg-green-900 text-white py-8">
+    <div class="container text-center">
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <i data-lucide="sprout" class="w-6 h-6 p-2 rounded-lg bg-white/10"></i>
+        <span class="text-xl font-bold" data-en="FarmChain" data-mr="फार्मचेन">FarmChain</span>
+      </div>
+      <p class="text-sm mb-4" data-en="Empowering farmers with modern technology." data-mr="आधुनिक तंत्रज्ञानासह शेतकऱ्यांना सक्षम करणे.">Empowering farmers with modern technology.</p>
+      <p class="text-sm" data-en="© 2025 FarmChain. All Rights Reserved." data-mr="© 2025 फार्मचेन. सर्व हक्क राखीव.">© 2025 FarmChain. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    lucide.createIcons();
+    function setLanguage(lang) {
+      document.getElementById('html').setAttribute('lang', lang);
+      document.querySelectorAll('[data-en][data-mr]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${lang}`);
+      });
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+      });
+      document.title = document.querySelector('title').getAttribute(`data-${lang}`);
+    }
+    setLanguage('en'); // Default to English
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const menuIcon = document.getElementById('menu-icon');
+      const closeIcon = document.getElementById('close-icon');
+      menu.classList.toggle('active');
+      menuIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector(anchor.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+        if (anchor.closest('#mobile-menu')) toggleMobileMenu();
+      });
+    });
+  </script>
+</body>
+</html>

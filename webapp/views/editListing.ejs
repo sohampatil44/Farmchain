@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Listing</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center items-center">
+
+  <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-lg">
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Edit Listing</h1>
+
+    <form action="/admin/edit/<%= listing._id %>" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <input type="text" name="name" placeholder="Equipment Name" value="<%= listing.name %>" class="border p-2 rounded w-full" required>
+
+      <select name="category" class="border p-2 rounded w-full" required>
+        <% CATEGORIES.forEach(c => { %>
+          <option value="<%= c %>" <%= listing.category === c ? "selected" : "" %>><%= c %></option>
+        <% }) %>
+      </select>
+
+      <select name="region" class="border p-2 rounded w-full" required>
+        <% REGIONS.forEach(r => { %>
+          <option value="<%= r %>" <%= listing.region === r ? "selected" : "" %>><%= r %></option>
+        <% }) %>
+      </select>
+
+      <input type="number" name="pricePerDay" placeholder="Price per day" value="<%= listing.pricePerDay %>" class="border p-2 rounded w-full" required>
+
+      <label class="block text-gray-600">Current Image:</label>
+      <img src="<%= listing.img %>" class="w-full h-40 object-cover rounded mb-2">
+
+      <input type="file" name="img" accept="image/*" class="border p-2 rounded w-full">
+
+      <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">Update Listing</button>
+    </form>
+
+  </div>
+
+</body>
+</html>

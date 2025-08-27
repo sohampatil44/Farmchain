@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold text-emerald-700 mb-6 text-center">Admin Dashboard</h1>
+
+  <!-- Pending Listings -->
+  <section class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pending Listings</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% if (pending.length > 0) { %>
+        <% pending.forEach(l => { %>
+          <div class="bg-white p-4 rounded shadow flex flex-col">
+            <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
+            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <div class="flex gap-2 mt-auto">
+              <form method="POST" action="/admin/approve/<%= l._id %>">
+                <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Approve</button>
+              </form>
+              <form method="POST" action="/admin/decline/<%= l._id %>">
+                <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded">Decline</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="col-span-full text-gray-500 text-center">No pending listings.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- Approved Listings -->
+  <section class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Approved Listings</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% if (approved.length > 0) { %>
+        <% approved.forEach(l => { %>
+          <div class="bg-white p-4 rounded shadow flex flex-col">
+            <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
+            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <div class="flex gap-2 mt-auto">
+              <form method="GET" action="/admin/edit/<%= l._id %>">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</button>
+              </form>
+              <form method="POST" action="/admin/delete/<%= l._id %>">
+                <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+              </form>
+            </div>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="col-span-full text-gray-500 text-center">No approved listings.</p>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- Declined Listings -->
+  <section class="mb-10">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Declined Listings</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% if (declined.length > 0) { %>
+        <% declined.forEach(l => { %>
+          <div class="bg-white p-4 rounded shadow flex flex-col">
+            <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
+            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <form method="POST" action="/admin/delete/<%= l._id %>">
+              <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+            </form>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="col-span-full text-gray-500 text-center">No declined listings.</p>
+      <% } %>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
