@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const Listing = require("../models/Listing");
+const { verifyToken, requireAdmin } = require("../middleware/auth");
 
-// Middleware to protect admin routes
-
-// Admin dashboard
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, requireAdmin, async (req, res) => {
   try {
     const pending = await Listing.find({ status: "pending" }).populate("owner");
     const approved = await Listing.find({ status: "approved" }).populate("owner");
@@ -18,8 +16,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Approve a listing
-router.post("/approve/:id", async (req, res) => {
+router.post("/approve/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     await Listing.findByIdAndUpdate(req.params.id, { status: "approved" });
     res.redirect("/admin");
@@ -29,8 +26,7 @@ router.post("/approve/:id", async (req, res) => {
   }
 });
 
-// Decline a listing
-router.post("/decline/:id", async (req, res) => {
+router.post("/decline/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     await Listing.findByIdAndUpdate(req.params.id, { status: "declined" });
     res.redirect("/admin");
@@ -40,8 +36,7 @@ router.post("/decline/:id", async (req, res) => {
   }
 });
 
-// Delete a listing
-router.post("/delete/:id", async (req, res) => {
+router.post("/delete/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     await Listing.findByIdAndDelete(req.params.id);
     res.redirect("/admin");
@@ -51,8 +46,7 @@ router.post("/delete/:id", async (req, res) => {
   }
 });
 
-// Edit listing - GET form
-router.get("/edit/:id", async (req, res) => {
+router.get("/edit/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const listing = await Listing.findById(req.params.id);
     if (!listing) return res.status(404).send("Listing not found");
@@ -68,8 +62,7 @@ router.get("/edit/:id", async (req, res) => {
   }
 });
 
-// Edit listing - POST update
-router.post("/edit/:id", async (req, res) => {
+router.post("/edit/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const { name, category, region, pricePerDay, img } = req.body;
     await Listing.findByIdAndUpdate(req.params.id, { name, category, region, pricePerDay, img });

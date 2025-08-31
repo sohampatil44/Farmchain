@@ -1,92 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard</title>
+<title data-en="Admin Dashboard" data-mr="प्रशासक डॅशबोर्ड">Admin Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/speech.css">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
+</style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-<div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold text-emerald-700 mb-6 text-center">Admin Dashboard</h1>
+<div id="speech-controls" class="speech-controls">
+  <div class="text-sm font-semibold mb-2" data-en="Text-to-Speech" data-mr="मजकूर-ते-भाषण">Text-to-Speech</div>
+  <button id="stop-speech" class="speech-btn" data-en="Stop" data-mr="थांबवा">Stop</button>
+  <button id="pause-speech" class="speech-btn" data-en="Pause" data-mr="विराम">Pause</button>
+  <button id="resume-speech" class="speech-btn" data-en="Resume" data-mr="पुन्हा सुरू">Resume</button>
+</div>
 
-  <!-- Pending Listings -->
+<div class="container mx-auto p-6">
+  
+  <div class="flex justify-end mb-4">
+    <button type="button" class="lang-btn active" onclick="window.FarmChainSpeech.setLanguage('en')" data-lang="en">English</button>
+    <button type="button" class="lang-btn" onclick="window.FarmChainSpeech.setLanguage('mr')" data-lang="mr">मराठी</button>
+  </div>
+
+  <h1 class="text-3xl font-bold text-emerald-700 mb-6 text-center speakable" data-en="Admin Dashboard" data-mr="प्रशासक डॅशबोर्ड">
+    Admin Dashboard
+  </h1>
+
   <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pending Listings</h2>
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Pending Listings" data-mr="प्रलंबित यादी">Pending Listings</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <% if (pending.length > 0) { %>
         <% pending.forEach(l => { %>
           <div class="bg-white p-4 rounded shadow flex flex-col">
             <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
-            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
-            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
-            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <h3 class="font-bold text-lg text-gray-700 mb-1 speakable"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1 speakable"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2 speakable">₹<%= l.pricePerDay %>/day</p>
             <div class="flex gap-2 mt-auto">
               <form method="POST" action="/admin/approve/<%= l._id %>">
-                <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Approve</button>
+                <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded speakable" data-en="Approve" data-mr="मंजूर करा">Approve</button>
               </form>
               <form method="POST" action="/admin/decline/<%= l._id %>">
-                <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded">Decline</button>
+                <button class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded speakable" data-en="Decline" data-mr="नकार द्या">Decline</button>
               </form>
             </div>
           </div>
         <% }) %>
       <% } else { %>
-        <p class="col-span-full text-gray-500 text-center">No pending listings.</p>
+        <p class="col-span-full text-gray-500 text-center speakable" data-en="No pending listings." data-mr="कोणतीही प्रलंबित यादी नाही.">No pending listings.</p>
       <% } %>
     </div>
   </section>
 
-  <!-- Approved Listings -->
   <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Approved Listings</h2>
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Approved Listings" data-mr="मंजूर यादी">Approved Listings</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <% if (approved.length > 0) { %>
         <% approved.forEach(l => { %>
           <div class="bg-white p-4 rounded shadow flex flex-col">
             <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
-            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
-            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
-            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <h3 class="font-bold text-lg text-gray-700 mb-1 speakable"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1 speakable"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2 speakable">₹<%= l.pricePerDay %>/day</p>
             <div class="flex gap-2 mt-auto">
               <form method="GET" action="/admin/edit/<%= l._id %>">
-                <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded">Edit</button>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded speakable" data-en="Edit" data-mr="संपादित करा">Edit</button>
               </form>
               <form method="POST" action="/admin/delete/<%= l._id %>">
-                <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+                <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded speakable" data-en="Delete" data-mr="हटवा">Delete</button>
               </form>
             </div>
           </div>
         <% }) %>
       <% } else { %>
-        <p class="col-span-full text-gray-500 text-center">No approved listings.</p>
+        <p class="col-span-full text-gray-500 text-center speakable" data-en="No approved listings." data-mr="कोणतीही मंजूर यादी नाही.">No approved listings.</p>
       <% } %>
     </div>
   </section>
 
-  <!-- Declined Listings -->
   <section class="mb-10">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Declined Listings</h2>
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Declined Listings" data-mr="नकार दिलेली यादी">Declined Listings</h2>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <% if (declined.length > 0) { %>
         <% declined.forEach(l => { %>
           <div class="bg-white p-4 rounded shadow flex flex-col">
             <img src="<%= l.img || 'https://via.placeholder.com/150' %>" class="w-full h-40 object-cover rounded mb-2">
-            <h3 class="font-bold text-lg text-gray-700 mb-1"><%= l.name %></h3>
-            <p class="text-sm text-gray-500 mb-1"><%= l.category %> • <%= l.region %></p>
-            <p class="text-sm text-gray-600 font-medium mb-2">₹<%= l.pricePerDay %>/day</p>
+            <h3 class="font-bold text-lg text-gray-700 mb-1 speakable"><%= l.name %></h3>
+            <p class="text-sm text-gray-500 mb-1 speakable"><%= l.category %> • <%= l.region %></p>
+            <p class="text-sm text-gray-600 font-medium mb-2 speakable">₹<%= l.pricePerDay %>/day</p>
             <form method="POST" action="/admin/delete/<%= l._id %>">
-              <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">Delete</button>
+              <button class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded speakable" data-en="Delete" data-mr="हटवा">Delete</button>
             </form>
           </div>
         <% }) %>
       <% } else { %>
-        <p class="col-span-full text-gray-500 text-center">No declined listings.</p>
+        <p class="col-span-full text-gray-500 text-center speakable" data-en="No declined listings." data-mr="कोणतीही नकार दिलेली यादी नाही.">No declined listings.</p>
       <% } %>
     </div>
   </section>
 
 </div>
+
+<script src="/js/speech.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    window.FarmChainSpeech.setLanguage('en');
+  });
+</script>
+
 </body>
 </html>

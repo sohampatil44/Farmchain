@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const Listing = require("../models/Listing");
+const User = require("../models/User");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { verifyToken, requireSeller } = require("../middleware/auth");
 
 const REGIONS = ["Thane", "Pune", "Nashik", "Aurangabad", "Nagpur", "Kolhapur", "Satara", "Solapur"];
 const CATEGORIES = ["Tractor", "Rotavator", "Seeder", "Harvester", "Sprayer", "Tiller", "Baler"];
@@ -38,12 +40,18 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Seller dashboard - no login/session
-router.get("/", async (req, res) => {
-    const sellerName = "Seller"; // placeholder
-    const sellerId = "seller1";   // placeholder owner id
-    const lang = req.query.lang || 'en'; // Default to English
-
+router.get("/", verifyToken, requireSeller, async (req, res) => {
     try {
+        const user = await User.findById(req.user.userId);
+        if (!user) {
+            res.clearCookie('token');
+            return res.redirect('/auth/login/seller');
+        }
+
+        const sellerName = user.name;
+        const sellerId = req.user.userId;
+        const lang = req.query.lang || 'en'; // Default to English
+
         const listings = await Listing.find({ owner: sellerId });
         res.render("seller", { 
             sellerName, 
@@ -61,9 +69,9 @@ router.get("/", async (req, res) => {
 });
 
 // Add new listing with file upload
-router.post("/add", upload.single("img"), async (req, res) => {
+router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req, res) => {
     const { name, category, region, pricePerDay, sellerName } = req.body;
-    const sellerId = "seller1"; // placeholder owner id
+    const sellerId = req.user.userId;
 
     if (!name || !category || !region || !pricePerDay || !sellerName) {
         return res.send("All fields except image are required");

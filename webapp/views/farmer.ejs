@@ -1,65 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Farmer Portal</title>
+<title data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/speech.css">
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
+</style>
 </head>
 <body class="bg-gray-100 min-h-screen">
+
+<div id="speech-controls" class="speech-controls">
+  <div class="text-sm font-semibold mb-2" data-en="Text-to-Speech" data-mr="मजकूर-ते-भाषण">Text-to-Speech</div>
+  <button id="stop-speech" class="speech-btn" data-en="Stop" data-mr="थांबवा">Stop</button>
+  <button id="pause-speech" class="speech-btn" data-en="Pause" data-mr="विराम">Pause</button>
+  <button id="resume-speech" class="speech-btn" data-en="Resume" data-mr="पुन्हा सुरू">Resume</button>
+</div>
 
 <%- include('partials/header') %>
 
 <div class="container mx-auto p-6">
 
-  <!-- Language Switcher -->
   <div class="flex justify-end mb-4">
-    <form method="GET">
-      <input type="hidden" name="region" value="<%= region %>">
-      <input type="hidden" name="category" value="<%= category %>">
-      <input type="hidden" name="q" value="<%= query %>">
-      <select name="lang" onchange="this.form.submit()" class="border p-2 rounded">
-        <option value="en" <%= lang === 'en' ? 'selected' : '' %>>English</option>
-        <option value="mr" <%= lang === 'mr' ? 'selected' : '' %>>Marathi</option>
-      </select>
-    </form>
+    <button type="button" class="lang-btn active" onclick="window.FarmChainSpeech.setLanguage('en')" data-lang="en">English</button>
+    <button type="button" class="lang-btn" onclick="window.FarmChainSpeech.setLanguage('mr')" data-lang="mr">मराठी</button>
   </div>
 
-  <h1 class="text-2xl font-semibold mb-4 text-center">
-    <%= lang === 'mr' ? `आपले स्वागत आहे, ${farmerName}!` : `Welcome, ${farmerName}!` %>
+  <h1 class="text-2xl font-semibold mb-4 text-center speakable" data-en="Welcome, <%= farmerName %>!" data-mr="आपले स्वागत आहे, <%= farmerName %>!">
+    Welcome, <%= farmerName %>!
   </h1>
 
-  <h2 class="text-3xl font-bold text-emerald-700 mb-6 text-center">
-    <%= lang === 'mr' ? 'उपलब्ध यंत्रसामग्री' : 'Available Equipment' %>
+  <h2 class="text-3xl font-bold text-emerald-700 mb-6 text-center speakable" data-en="Available Equipment" data-mr="उपलब्ध यंत्रसामग्री">
+    Available Equipment
   </h2>
 
-  <!-- Filters -->
   <form class="mb-6 flex flex-wrap gap-2 items-center" method="GET">
-    <input type="hidden" name="lang" value="<%= lang %>">
-
     <select name="region" class="border p-2 rounded">
-      <option value=""><%= lang === 'mr' ? 'प्रदेश निवडा' : 'Select Region' %></option>
+      <option value="" data-en="Select Region" data-mr="प्रदेश निवडा">Select Region</option>
       <% REGIONS.forEach(function(r) { %>
         <option value="<%= r %>" <%= region === r ? 'selected' : '' %>><%= r %></option>
       <% }); %>
     </select>
 
     <select name="category" class="border p-2 rounded">
-      <option value="all"><%= lang === 'mr' ? 'सर्व श्रेण्या' : 'All Categories' %></option>
+      <option value="all" data-en="All Categories" data-mr="सर्व श्रेण्या">All Categories</option>
       <% CATEGORIES.forEach(function(c) { %>
         <option value="<%= c %>" <%= category === c ? 'selected' : '' %>>
-          <%= lang === 'mr' ? (CATEGORY_TRANSLATIONS[c] || c) : c %>
+          <%= CATEGORY_TRANSLATIONS[c] || c %>
         </option>
       <% }); %>
     </select>
 
-    <input type="text" name="q" placeholder="<%= lang === 'mr' ? 'शोधा...' : 'Search...' %>" class="border p-2 rounded flex-1" value="<%= query %>"/>
-    <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded transition">
-      <%= lang === 'mr' ? 'फिल्टर करा' : 'Filter' %>
+    <input type="text" name="q" placeholder="Search..." class="border p-2 rounded flex-1" value="<%= query %>"/>
+    <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded transition speakable" data-en="Filter" data-mr="फिल्टर करा">
+      Filter
     </button>
   </form>
 
-  <!-- Listings -->
   <% if(listings && listings.length > 0) { %>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <% listings.forEach(function(l) { 
@@ -67,37 +68,41 @@
       %>
         <div class="bg-white p-4 rounded-2xl shadow hover:shadow-xl transition flex flex-col">
           <div class="w-full h-40 bg-cover bg-center rounded-xl mb-3" style="background-image: url('<%= imgUrl %>');"></div>
-          <h3 class="font-bold text-lg text-gray-700 mb-1">
-            <%= lang === 'mr' ? (CATEGORY_TRANSLATIONS[l.name] || l.name) : l.name %>
+          <h3 class="font-bold text-lg text-gray-700 mb-1 speakable">
+            <%= CATEGORY_TRANSLATIONS[l.name] || l.name %>
           </h3>
-          <p class="text-sm text-gray-500 mb-1">
-            <%= lang === 'mr' ? (CATEGORY_TRANSLATIONS[l.category] || l.category) : l.category %> • <%= l.region %>
+          <p class="text-sm text-gray-500 mb-1 speakable">
+            <%= CATEGORY_TRANSLATIONS[l.category] || l.category %> • <%= l.region %>
           </p>
-          <p class="text-sm text-gray-600 font-medium mb-2">
-            ₹<%= l.pricePerDay %>/<%= lang === 'mr' ? 'दिवस' : 'day' %>
+          <p class="text-sm text-gray-600 font-medium mb-2 speakable">
+            ₹<%= l.pricePerDay %>/day
           </p>
 
-          <form method="POST" action="/farmer/book/<%= l._id %>?lang=<%= lang %>" class="flex gap-2 items-center">
-            <input type="number" name="days" placeholder="<%= lang === 'mr' ? 'दिवस' : 'Days' %>" class="border p-1 rounded w-20" min="1" required/>
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition">
-              <%= lang === 'mr' ? 'बुक करा' : 'Book' %>
+          <form method="POST" action="/farmer/book/<%= l._id %>" class="flex gap-2 items-center">
+            <input type="number" name="days" placeholder="Days" class="border p-1 rounded w-20" min="1" required/>
+            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="Book" data-mr="बुक करा">
+              Book
             </button>
           </form>
         </div>
       <% }); %>
     </div>
   <% } else { %>
-    <p class="col-span-full text-gray-500 text-center mt-4">
-      <% if(region) { %>
-        <%= lang === 'mr' ? `${region} मध्ये कोणतेही यंत्र नाही.` : `No machineries available in ${region}.` %>
-      <% } else { %>
-        <%= lang === 'mr' ? 'उपलब्ध यंत्र पाहण्यासाठी कृपया प्रदेश निवडा.' : 'Please select a region to see available machineries.' %>
-      <% } %>
-    </p>
+    <div class="text-center py-8">
+      <p class="text-gray-500 speakable" data-en="No equipment found" data-mr="कोणतीही यंत्रसामग्री सापडली नाही">No equipment found</p>
+    </div>
   <% } %>
 
 </div>
 
 <%- include('partials/footer') %>
+
+<script src="/js/speech.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    window.FarmChainSpeech.setLanguage('en');
+  });
+</script>
+
 </body>
 </html>

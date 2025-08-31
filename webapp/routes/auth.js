@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+const { generateToken } = require("../middleware/auth");
 
 // Signup (only for farmer & seller)
 router.get("/signup/:role", (req, res) => {
@@ -19,7 +19,7 @@ router.post("/signup/:role", async (req, res) => {
     try {
         const user = new User({ name, email, password, role });
         await user.save();
-        res.redirect(`/login/${role}`);
+        res.redirect(`/auth/login/${role}`);
     } catch (err) {
         console.error(err);
         res.send("Error creating account");
@@ -28,7 +28,7 @@ router.post("/signup/:role", async (req, res) => {
 
 // Login
 router.get("/login/:role", (req, res) => {
-    res.render("login", { role: req.params.role ,error:null});
+    res.render("login", { role: req.params.role, error: null });
 });
 
 router.post("/login/:role", async (req, res) => {
@@ -39,22 +39,34 @@ router.post("/login/:role", async (req, res) => {
         let user;
 
         if (role === "admin") {
-            // Hardcoded admin
-            if (email === "soham" && password === "123") {
-                req.session.userId = "adminId";
-                req.session.userName = "Soham";
-                req.session.role = "admin";
+            if (email === "alishaikhh15@gmail.com" && password === "123") {
+                const token = generateToken("adminId", "admin");
+                res.cookie('token', token, { 
+                    httpOnly: true, 
+                    secure: process.env.NODE_ENV === 'production',
+                    maxAge: 24 * 60 * 60 * 1000 
+                });
                 return res.redirect("/admin");
-            } else return res.send("Invalid admin credentials");
+            } else {
+                return res.render("login", { role, error: "Invalid admin credentials" });
+            }
         } else {
             user = await User.findOne({ email, role });
-            if (!user) return res.send("User not found");
+            if (!user) {
+                return res.render("login", { role, error: "User not found" });
+            }
+            
             const match = await bcrypt.compare(password, user.password);
-            if (!match) return res.send("Invalid credentials");
+            if (!match) {
+                return res.render("login", { role, error: "Invalid credentials" });
+            }
 
-            req.session.userId = user._id;
-            req.session.userName = user.name;
-            req.session.role = user.role;
+            const token = generateToken(user._id.toString(), user.role);
+            res.cookie('token', token, { 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000 
+            });
 
             if (role === "farmer") return res.redirect("/farmer");
             if (role === "seller") return res.redirect("/seller");
@@ -62,13 +74,13 @@ router.post("/login/:role", async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.send("Error logging in");
+        res.render("login", { role, error: "Error logging in" });
     }
 });
 
 // Logout
 router.get("/logout", (req, res) => {
-    req.session.destroy();
+    res.clearCookie('token');
     res.redirect("/");
 });
 

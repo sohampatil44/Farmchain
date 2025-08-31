@@ -1,0 +1,129 @@
+.speakable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.speakable:hover {
+  background-color: rgba(47, 133, 90, 0.1);
+  border-radius: 4px;
+}
+
+.nav-link.speakable {
+  display: inline-block;
+  position: relative;
+}
+
+.nav-link.speakable:hover {
+  background-color: rgba(47, 133, 90, 0.1);
+  border-radius: 4px;
+}
+
+h1.speakable, h2.speakable, h3.speakable {
+  display: inline-block;
+  position: relative;
+}
+
+p.speakable {
+  display: inline-block;
+  position: relative;
+}
+
+.btn.speakable:hover {
+  background: linear-gradient(135deg, #2f855a, #68d391);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  border-radius: 0.75rem;
+  padding: 1rem 2rem;
+  margin: 0;
+}
+
+.speaking {
+  background-color: rgba(47, 133, 90, 0.2) !important;
+  border-radius: 4px;
+}
+
+.btn.speaking {
+  background: linear-gradient(135deg, #1a5f3a, #48bb78) !important;
+  border-radius: 0.75rem;
+  padding: 1rem 2rem;
+  margin: 0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.speech-controls {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+  background: white;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+}
+
+.speech-controls.active {
+  display: block;
+}
+
+.speech-btn {
+  background: #2f855a;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 2px;
+  font-size: 12px;
+}
+
+.speech-btn:hover {
+  background: #1a5f3a;
+}
+
+.speech-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.lang-btn {
+  background: #e5e7eb;
+  color: #2d2a26;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-btn.active {
+  background: #2f855a;
+  color: white;
+}
+
+.lang-btn:hover {
+  background: #2f855a;
+  color: white;
+}
+
+.btn {
+  background: linear-gradient(135deg, #2f855a, #68d391);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}

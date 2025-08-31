@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= role.charAt(0).toUpperCase() + role.slice(1) %> Signup - FarmChain</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-96">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-800"><%= role.charAt(0).toUpperCase() + role.slice(1) %> Signup</h1>
+            <p class="text-gray-600">Create your FarmChain account</p>
+        </div>
+
+        <form method="POST" action="/auth/signup/<%= role %>">
+            <div class="mb-4">
+                <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                <input type="text" id="name" name="name" required 
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                <input type="email" id="email" name="email" required 
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                <input type="password" id="password" name="password" required 
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">
+                    Sign Up
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center mt-4">
+            <p class="text-gray-600">Already have an account?</p>
+            <a href="/auth/login/<%= role %>" class="text-green-600 hover:text-green-800">Login here</a>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/" class="text-gray-500 hover:text-gray-700">Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

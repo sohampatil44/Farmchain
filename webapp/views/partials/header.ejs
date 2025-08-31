@@ -1,21 +1,21 @@
 <nav class="bg-green-600 text-white px-6 py-4 flex justify-between items-center">
     <div class="text-xl font-bold">
-      <a href="/">FarmChain</a>
+      <a href="/" class="speakable" data-mr="फार्मचेन">फार्मचेन</a>
     </div>
   
     <ul class="flex space-x-6 items-center">
-      <% if (session && session.userId) { %>
-        <li>Welcome, <span class="font-semibold"><%= session.userName %></span> (<%= session.role %>)</li>
+      <% if (typeof user !== 'undefined' && user) { %>
+        <li class="speakable" data-mr="आपले स्वागत आहे, <%= user.name %>">आपले स्वागत आहे, <span class="font-semibold"><%= user.name %></span> (<%= user.role %>)</li>
 
-        <% if (session.role === "farmer") { %>
-          <li><a href="/farmer" class="hover:underline">Dashboard</a></li>
-        <% } else if (session.role === "seller") { %>
-          <li><a href="/seller" class="hover:underline">Dashboard</a></li>
-        <% } else if (session.role === "admin") { %>
-          <li><a href="/admin" class="hover:underline">Admin</a></li>
+        <% if (user.role === "farmer") { %>
+          <li><a href="/farmer" class="hover:underline speakable" data-mr="डॅशबोर्ड">डॅशबोर्ड</a></li>
+        <% } else if (user.role === "seller") { %>
+          <li><a href="/seller" class="hover:underline speakable" data-mr="डॅशबोर्ड">डॅशबोर्ड</a></li>
+        <% } else if (user.role === "admin") { %>
+          <li><a href="/admin" class="hover:underline speakable" data-mr="प्रशासक">प्रशासक</a></li>
         <% } %>
 
-        <li><a href="/logout" class="bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a></li>
+        <li><a href="/auth/logout" class="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors speakable" data-mr="लॉगआउट">लॉगआउट</a></li>
       <% } %>
     </ul>
 </nav>
