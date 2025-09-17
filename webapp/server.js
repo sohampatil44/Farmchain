@@ -42,7 +42,7 @@ app.use(async (req, res, next) => {
     next();
 });
 
-mongoose.connect("mongodb://localhost:27017/farmrent", {
+mongoose.connect("mongodb://localhost:27017/FarmChain", {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(() => console.log("MongoDB connected"))

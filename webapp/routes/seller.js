@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Seller dashboard - no login/session
+// Seller dashboard
 router.get("/", verifyToken, requireSeller, async (req, res) => {
     try {
         const user = await User.findById(req.user.userId);
@@ -50,9 +50,10 @@ router.get("/", verifyToken, requireSeller, async (req, res) => {
 
         const sellerName = user.name;
         const sellerId = req.user.userId;
-        const lang = req.query.lang || 'en'; // Default to English
+        const lang = req.query.lang || 'en';
 
-        const listings = await Listing.find({ owner: sellerId });
+        const listings = await Listing.find({ owner: sellerId }).sort({ createdAt: -1 });
+
         res.render("seller", { 
             sellerName, 
             listings, 
@@ -60,7 +61,7 @@ router.get("/", verifyToken, requireSeller, async (req, res) => {
             CATEGORIES, 
             CATEGORY_TRANSLATIONS, 
             lang,
-            query: req.query // to preserve filters in forms if needed
+            query: req.query
         });
     } catch (err) {
         console.error("Error fetching listings:", err);
@@ -68,12 +69,12 @@ router.get("/", verifyToken, requireSeller, async (req, res) => {
     }
 });
 
-// Add new listing with file upload
+// Add new listing with auto-approval for machines ≤5 years old
 router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req, res) => {
-    const { name, category, region, pricePerDay, sellerName } = req.body;
+    const { name, category, region, pricePerDay, sellerName, ageInYears } = req.body;
     const sellerId = req.user.userId;
 
-    if (!name || !category || !region || !pricePerDay || !sellerName) {
+    if (!name || !category || !region || !pricePerDay || !sellerName || !ageInYears) {
         return res.send("All fields except image are required");
     }
 
@@ -81,6 +82,11 @@ router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req
         "https://images.unsplash.com/photo-1602526420402-1e3a07e13420?q=80&w=1600&auto=format&fit=crop";
 
     try {
+        let status = "pending";
+        if (Number(ageInYears) <= 5) {
+            status = "approved"; // Auto-approve if machine ≤5 years old
+        }
+
         await Listing.create({
             name,
             category,
@@ -88,9 +94,12 @@ router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req
             pricePerDay: Number(pricePerDay),
             img: imgPath,
             owner: sellerId,
-            sellerName
+            sellerName,
+            ageInYears: Number(ageInYears),
+            status,
+            createdAt: new Date()
         });
-        // Preserve language selection after redirect
+
         res.redirect(`/seller?lang=${req.body.lang || 'en'}`);
     } catch (err) {
         console.error("Error creating listing:", err);
