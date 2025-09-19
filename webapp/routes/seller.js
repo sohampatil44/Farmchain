@@ -6,7 +6,11 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 const { verifyToken, requireSeller } = require("../middleware/auth");
+const { spawn } = require("child_process");
 
+// -------------------------------
+// Constants
+// -------------------------------
 const REGIONS = ["Thane", "Pune", "Nashik", "Aurangabad", "Nagpur", "Kolhapur", "Satara", "Solapur"];
 const CATEGORIES = ["Tractor", "Rotavator", "Seeder", "Harvester", "Sprayer", "Tiller", "Baler"];
 
@@ -21,25 +25,27 @@ const CATEGORY_TRANSLATIONS = {
     Baler: "बेलर"
 };
 
+// -------------------------------
 // Ensure uploads folder exists
+// -------------------------------
 const uploadDir = path.join(__dirname, "../public/uploads");
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// Set storage for multer
+// -------------------------------
+// Multer storage configuration
+// -------------------------------
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage });
 
-// Seller dashboard
+// -------------------------------
+// Seller Dashboard
+// -------------------------------
 router.get("/", verifyToken, requireSeller, async (req, res) => {
     try {
         const user = await User.findById(req.user.userId);
@@ -55,11 +61,11 @@ router.get("/", verifyToken, requireSeller, async (req, res) => {
         const listings = await Listing.find({ owner: sellerId }).sort({ createdAt: -1 });
 
         res.render("seller", { 
-            sellerName, 
-            listings, 
-            REGIONS, 
-            CATEGORIES, 
-            CATEGORY_TRANSLATIONS, 
+            sellerName,
+            listings,
+            REGIONS,
+            CATEGORIES,
+            CATEGORY_TRANSLATIONS,
             lang,
             query: req.query
         });
@@ -69,7 +75,9 @@ router.get("/", verifyToken, requireSeller, async (req, res) => {
     }
 });
 
-// Add new listing with auto-approval for machines ≤5 years old
+// -------------------------------
+// Add new listing with auto-approval
+// -------------------------------
 router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req, res) => {
     const { name, category, region, pricePerDay, sellerName, ageInYears } = req.body;
     const sellerId = req.user.userId;
@@ -78,14 +86,12 @@ router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req
         return res.send("All fields except image are required");
     }
 
-    const imgPath = req.file ? "/uploads/" + req.file.filename :
-        "https://images.unsplash.com/photo-1602526420402-1e3a07e13420?q=80&w=1600&auto=format&fit=crop";
+    const imgPath = req.file
+        ? "/uploads/" + req.file.filename
+        : "https://images.unsplash.com/photo-1602526420402-1e3a07e13420?q=80&w=1600&auto=format&fit=crop";
 
     try {
-        let status = "pending";
-        if (Number(ageInYears) <= 5) {
-            status = "approved"; // Auto-approve if machine ≤5 years old
-        }
+        const status = Number(ageInYears) <= 5 ? "approved" : "pending";
 
         await Listing.create({
             name,
@@ -105,6 +111,33 @@ router.post("/add", verifyToken, requireSeller, upload.single("img"), async (req
         console.error("Error creating listing:", err);
         res.status(500).send("Error creating listing");
     }
+});
+
+// -------------------------------
+// Live price validation using Python
+// -------------------------------
+router.post("/validate-price", (req, res) => {
+    const { equipment, price } = req.body;
+
+    // Absolute path to Python script
+    const pyPath = path.join(__dirname, "../validate_price.py");
+
+    const py = spawn("/opt/homebrew/Caskroom/miniforge/base/bin/python3", [pyPath, equipment, price]);
+
+    let result = "";
+    py.stdout.on("data", data => result += data.toString());
+    py.stderr.on("data", data => console.error("Python error:", data.toString()));
+
+    py.on("close", () => {
+        try {
+            // Parse result from Python
+            const response = JSON.parse(result);
+            res.json(response);
+        } catch (err) {
+            console.error("Error parsing validator output:", err, "Raw output:", result);
+            res.json({ valid: false, message: "Validation error" });
+        }
+    });
 });
 
 module.exports = router;

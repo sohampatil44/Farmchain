@@ -56,7 +56,8 @@
           <option value="<%= r %>"><%= r %></option>
         <% }) %>
       </select>
-      <input type="number" name="pricePerDay" placeholder="Price per day (₹)" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <input type="number" id="pricePerDay" name="pricePerDay" placeholder="Price per day (₹)" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <p id="priceError" class="text-red-500 text-sm mt-1"></p>
       <!-- NEW FIELD: Age in years -->
 <input type="number" name="ageInYears" placeholder="Age of machine (years)" min="0" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
 
@@ -107,5 +108,43 @@
     window.FarmChainSpeech.setLanguage('en');
   });
 </script>
+<script>
+  const priceInput = document.getElementById("pricePerDay");
+  const equipmentInput = document.querySelector("input[name='name']");
+  const priceError = document.getElementById("priceError");
+
+  let timeout = null;
+
+  priceInput.addEventListener("input", () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      const price = priceInput.value;
+      const equipment = equipmentInput.value;
+
+      if (!price || !equipment) {
+        priceError.textContent = "";
+        return;
+      }
+
+      fetch("/seller/validate-price", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ equipment, price })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.valid) {
+          priceError.textContent = data.message;
+        } else {
+          priceError.textContent = "";
+        }
+      })
+      .catch(err => {
+        priceError.textContent = "Error validating price";
+      });
+    }, 500); // debounce 0.5s
+  });
+</script>
+
 </body>
 </html>
