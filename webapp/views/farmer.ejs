@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" id="html">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/speech.css">
-<style>
-  body { font-family: 'Inter', sans-serif; }
-  [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/speech.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
+    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+  </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
@@ -77,8 +81,10 @@
           <p class="text-sm text-gray-600 font-medium mb-2 speakable">
             ₹<%= l.pricePerDay %>/day
           </p>
-
-          <form method="POST" action="/farmer/book/<%= l._id %>" class="flex gap-2 items-center">
+          <p class="text-sm text-gray-500 mb-2 speakable">
+            Condition: <%= l.condition %>
+          </p>
+          <form method="POST" action="/farmer/initiate-booking/<%= l._id %>" class="flex gap-2 items-center">
             <input type="number" name="days" placeholder="Days" class="border p-1 rounded w-20" min="1" required/>
             <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="Book" data-mr="बुक करा">
               Book
@@ -93,6 +99,43 @@
     </div>
   <% } %>
 
+  <!-- Orders Panel -->
+  <div class="mt-12">
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Your Orders" data-mr="आपल्या ऑर्डर्स">
+      Your Orders
+    </h2>
+    <% if (bookings && bookings.length > 0) { %>
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <% bookings.forEach(function(booking) { %>
+          <% if (booking.status === 'confirmed') { %>
+            <div class="bg-white p-4 rounded-2xl shadow hover:shadow-xl transition flex flex-col">
+              <h3 class="font-bold text-lg text-gray-700 mb-1 speakable">Order for <%= booking.listing.name %></h3>
+              <p class="text-sm text-gray-500 mb-1 speakable">Seller: <%= booking.listing.sellerName %></p>
+              <p class="text-sm text-gray-600 font-medium mb-1 speakable">Amount: ₹<%= booking.amount %></p>
+              <p class="text-sm text-gray-500 mb-2 speakable">Days: <%= Math.round((booking.to - booking.from) / 86400000) %></p>
+              <button onclick="showOrderDetails('<%= JSON.stringify(booking) %>')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="View Details" data-mr="तपशील पहा">
+                View Details
+              </button>
+            </div>
+          <% } %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-8">
+        <p class="text-gray-500 speakable" data-en="No orders yet" data-mr="कोणतीही ऑर्डर्स नाहीत">No orders yet</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Modal for Order Details -->
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
+      <h2 class="text-xl font-bold mb-4 speakable" data-en="Order Details" data-mr="ऑर्डर तपशील">Order Details</h2>
+      <p id="orderDetails" class="text-gray-700"></p>
+    </div>
+  </div>
+
 </div>
 
 <%- include('partials/footer') %>
@@ -102,6 +145,21 @@
   document.addEventListener('DOMContentLoaded', function() {
     window.FarmChainSpeech.setLanguage('en');
   });
+
+  function showOrderDetails(bookingJson) {
+    const booking = JSON.parse(bookingJson);
+    const details = `
+      Booking ID: ${booking._id}<br>
+      Equipment: ${booking.listing.name} (Category: ${booking.listing.category}, Region: ${booking.listing.region})<br>
+      Seller: ${booking.listing.sellerName}<br>
+      Days: ${(new Date(booking.to) - new Date(booking.from)) / 86400000}<br>
+      Amount: ₹${booking.amount}<br>
+      Tx Hash: ${booking.txHash}<br>
+      Date: ${new Date(booking.createdAt).toLocaleString()}
+    `;
+    document.getElementById('orderDetails').innerHTML = details;
+    document.getElementById('orderModal').style.display = "block";
+  }
 </script>
 
 </body>

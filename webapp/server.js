@@ -17,6 +17,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(async (req, res, next) => {
     const token = req.cookies.token;
+    console.log("===== server middleware =====");
+    console.log("Token from cookies:", token);
     if (token) {
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');

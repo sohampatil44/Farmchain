@@ -1,0 +1,40 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/sohampatil/farmer blockhin/webapp/contracts/FarmMachinery.sol": {
+      "lastModificationDate": 1758560897446,
+      "contentHash": "0fa58ca45b37f5076fc586ae9d4c5877",
+      "sourceName": "contracts/FarmMachinery.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "FarmMachinery"
+      ]
+    }
+  }
+}

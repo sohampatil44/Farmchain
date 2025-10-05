@@ -41,11 +41,16 @@ router.post("/login/:role", async (req, res) => {
         if (role === "admin") {
             if (email === "alishaikhh15@gmail.com" && password === "123") {
                 const token = generateToken("adminId", "admin");
-                res.cookie('token', token, { 
-                    httpOnly: true, 
-                    secure: process.env.NODE_ENV === 'production',
-                    maxAge: 24 * 60 * 60 * 1000 
+                
+                // Fixed cookie settings - use consistent settings for all environments
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: false, // Set to false for localhost, true for production
+                    sameSite: 'lax', // Use 'lax' for better compatibility
+                    maxAge: 24 * 60 * 60 * 1000 // 24 hours
                 });
+                
+                console.log('Admin token set:', token);
                 return res.redirect("/admin");
             } else {
                 return res.render("login", { role, error: "Invalid admin credentials" });
@@ -62,10 +67,11 @@ router.post("/login/:role", async (req, res) => {
             }
 
             const token = generateToken(user._id.toString(), user.role);
-            res.cookie('token', token, { 
-                httpOnly: true, 
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 24 * 60 * 60 * 1000 
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: false, // Set to false for localhost
+                sameSite: 'lax',
+                maxAge: 24 * 60 * 60 * 1000
             });
 
             if (role === "farmer") return res.redirect("/farmer");
