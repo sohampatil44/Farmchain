@@ -148,4 +148,30 @@ router.get("/refresh", verifyToken, requireSeller, async (req, res) => {
     }
 });
 
+// 📊 Seller Analytics
+router.get("/analytics", verifyToken, requireSeller, async (req, res) => {
+    const listings = await Listing.find({ owner: req.user.userId });
+    const listingIds = listings.map(l => l._id);
+
+    const bookings = await Booking.find({
+        listing: { $in: listingIds },
+        status: "confirmed"
+    }).populate("listing");
+
+    let totalIncome = 0;
+    const machineRevenue = {};
+
+    bookings.forEach(b => {
+        totalIncome += b.amount;
+        const name = b.listing?.name || "Unknown";
+        machineRevenue[name] = (machineRevenue[name] || 0) + b.amount;
+    });
+
+    res.render("analytics-seller", {
+        totalIncome,
+        machineRevenue
+    });
+});
+
+
 module.exports = router;

@@ -200,4 +200,33 @@ router.get('/success/:bookingId', verifyToken, requireFarmer, async (req, res) =
     }
 });
 
+/**
+ * FARMER ANALYTICS
+ */
+router.get("/analytics", verifyToken, requireFarmer, async (req, res) => {
+    const bookings = await Booking.find({
+        farmer: req.user.userId,
+        status: "confirmed"
+    }).populate("listing");
+
+    let totalSpent = 0;
+    let totalDays = 0;
+    const usageMap = {};
+
+    bookings.forEach(b => {
+        totalSpent += b.amount;
+        const days = Math.round((b.to - b.from) / 86400000);
+        totalDays += days;
+
+        const name = b.listing?.name || "Unknown";
+        usageMap[name] = (usageMap[name] || 0) + days;
+    });
+
+    res.render("analytics-farmer", {
+        totalSpent,
+        totalDays,
+        usageMap
+    });
+});
+
 module.exports = router;

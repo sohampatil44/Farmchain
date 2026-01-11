@@ -36,13 +36,19 @@ app.use(async (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET || "your-secret-key-change-in-production");
-
+  
       if (decoded.role === "admin") {
-        res.locals.user = { id: "adminId", name: "alishaikhh15@gmail.com", role: "admin" };
+        req.user = { userId: "adminId", role: "admin", name: "Admin" };
+        res.locals.user = req.user;
       } else {
         const user = await User.findById(decoded.userId);
         if (user) {
-          res.locals.user = { id: user._id, name: user.name, role: user.role };
+          req.user = {
+            userId: user._id,
+            role: user.role,
+            name: user.name
+          };
+          res.locals.user = req.user;
         }
       }
     } catch (error) {
@@ -50,6 +56,7 @@ app.use(async (req, res, next) => {
       res.clearCookie("token");
     }
   }
+  
 
   next();
 });

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Farmer Analytics</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .card-value {
+      font-size: 26px;
+      font-weight: 600;
+      color: #111827;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .list-card {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 15px;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    .machinery {
+      font-weight: 500;
+    }
+
+    .days {
+      background: #eef2ff;
+      color: #4338ca;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Farmer Analytics</h2>
+
+    <div class="stats">
+      <div class="card">
+        <div class="card-label">Total Money Spent</div>
+        <div class="card-value">₹<%= totalSpent %></div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Total Usage Days</div>
+        <div class="card-value"><%= totalDays %> days</div>
+      </div>
+    </div>
+
+    <h3>Most Used Machinery</h3>
+
+    <div class="list-card">
+      <ul>
+        <% for (let m in usageMap) { %>
+          <li>
+            <span class="machinery"><%= m %></span>
+            <span class="days"><%= usageMap[m] %> days</span>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -4,135 +4,185 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title data-en="Farmer Portal" data-mr="शेतकरी पोर्टल">Farmer Portal</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/speech.css">
+
   <style>
     body { font-family: 'Inter', sans-serif; }
     [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
-    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; }
-    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
-    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 50;
+    }
+
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 24px;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
 
 <div id="speech-controls" class="speech-controls">
-  <div class="text-sm font-semibold mb-2" data-en="Text-to-Speech" data-mr="मजकूर-ते-भाषण">Text-to-Speech</div>
-  <button id="stop-speech" class="speech-btn" data-en="Stop" data-mr="थांबवा">Stop</button>
-  <button id="pause-speech" class="speech-btn" data-en="Pause" data-mr="विराम">Pause</button>
-  <button id="resume-speech" class="speech-btn" data-en="Resume" data-mr="पुन्हा सुरू">Resume</button>
+  <div class="text-sm font-semibold mb-2">Text-to-Speech</div>
+  <button id="stop-speech" class="speech-btn">Stop</button>
+  <button id="pause-speech" class="speech-btn">Pause</button>
+  <button id="resume-speech" class="speech-btn">Resume</button>
 </div>
 
 <%- include('partials/header') %>
 
-<div class="container mx-auto p-6">
+<div class="max-w-7xl mx-auto px-6 py-8">
 
-  <div class="flex justify-end mb-4">
-    <button type="button" class="lang-btn active" onclick="window.FarmChainSpeech.setLanguage('en')" data-lang="en">English</button>
-    <button type="button" class="lang-btn" onclick="window.FarmChainSpeech.setLanguage('mr')" data-lang="mr">मराठी</button>
+  <!-- Language Switch -->
+  <div class="flex justify-end gap-2 mb-6">
+    <button class="lang-btn active" onclick="window.FarmChainSpeech.setLanguage('en')">English</button>
+    <button class="lang-btn" onclick="window.FarmChainSpeech.setLanguage('mr')">मराठी</button>
   </div>
 
-  <h1 class="text-2xl font-semibold mb-4 text-center speakable" data-en="Welcome, <%= farmerName %>!" data-mr="आपले स्वागत आहे, <%= farmerName %>!">
-    Welcome, <%= farmerName %>!
-  </h1>
+  <!-- Welcome -->
+  <div class="text-center mb-8">
+    <h1 class="text-3xl font-bold mb-2 speakable">
+      Welcome, <%= farmerName %> 👋
+    </h1>
+    <p class="text-slate-500">Manage equipment rentals and track your usage</p>
+  </div>
 
-  <h2 class="text-3xl font-bold text-emerald-700 mb-6 text-center speakable" data-en="Available Equipment" data-mr="उपलब्ध यंत्रसामग्री">
+  <!-- Analytics CTA -->
+  <div class="flex justify-center mb-10">
+    <a href="/farmer/analytics"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md transition font-medium">
+      📊 View Usage Analytics
+    </a>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-2xl shadow p-6 mb-10">
+    <form class="flex flex-wrap gap-4 items-center" method="GET">
+      <select name="region" class="border rounded-lg px-3 py-2">
+        <option value="">Select Region</option>
+        <% REGIONS.forEach(function(r) { %>
+          <option value="<%= r %>" <%= region === r ? 'selected' : '' %>><%= r %></option>
+        <% }); %>
+      </select>
+
+      <select name="category" class="border rounded-lg px-3 py-2">
+        <option value="all">All Categories</option>
+        <% CATEGORIES.forEach(function(c) { %>
+          <option value="<%= c %>" <%= category === c ? 'selected' : '' %>>
+            <%= CATEGORY_TRANSLATIONS[c] || c %>
+          </option>
+        <% }); %>
+      </select>
+
+      <input type="text"
+             name="q"
+             placeholder="Search equipment..."
+             value="<%= query %>"
+             class="border rounded-lg px-4 py-2 flex-1"/>
+
+      <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg transition">
+        Filter
+      </button>
+    </form>
+  </div>
+
+  <!-- Listings -->
+  <h2 class="text-2xl font-bold text-center mb-8 text-emerald-700 speakable">
     Available Equipment
   </h2>
 
-  <form class="mb-6 flex flex-wrap gap-2 items-center" method="GET">
-    <select name="region" class="border p-2 rounded">
-      <option value="" data-en="Select Region" data-mr="प्रदेश निवडा">Select Region</option>
-      <% REGIONS.forEach(function(r) { %>
-        <option value="<%= r %>" <%= region === r ? 'selected' : '' %>><%= r %></option>
-      <% }); %>
-    </select>
-
-    <select name="category" class="border p-2 rounded">
-      <option value="all" data-en="All Categories" data-mr="सर्व श्रेण्या">All Categories</option>
-      <% CATEGORIES.forEach(function(c) { %>
-        <option value="<%= c %>" <%= category === c ? 'selected' : '' %>>
-          <%= CATEGORY_TRANSLATIONS[c] || c %>
-        </option>
-      <% }); %>
-    </select>
-
-    <input type="text" name="q" placeholder="Search..." class="border p-2 rounded flex-1" value="<%= query %>"/>
-    <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded transition speakable" data-en="Filter" data-mr="फिल्टर करा">
-      Filter
-    </button>
-  </form>
-
   <% if(listings && listings.length > 0) { %>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
       <% listings.forEach(function(l) { 
-           const imgUrl = (l.img && l.img.trim() !== "") ? l.img : "https://via.placeholder.com/300x150"; 
+        const imgUrl = (l.img && l.img.trim() !== "") ? l.img : "https://via.placeholder.com/400x200";
       %>
-        <div class="bg-white p-4 rounded-2xl shadow hover:shadow-xl transition flex flex-col">
-          <div class="w-full h-40 bg-cover bg-center rounded-xl mb-3" style="background-image: url('<%= imgUrl %>');"></div>
-          <h3 class="font-bold text-lg text-gray-700 mb-1 speakable">
-            <%= CATEGORY_TRANSLATIONS[l.name] || l.name %>
-          </h3>
-          <p class="text-sm text-gray-500 mb-1 speakable">
-            <%= CATEGORY_TRANSLATIONS[l.category] || l.category %> • <%= l.region %>
-          </p>
-          <p class="text-sm text-gray-600 font-medium mb-2 speakable">
-            ₹<%= l.pricePerDay %>/day
-          </p>
-          <p class="text-sm text-gray-500 mb-2 speakable">
-            Condition: <%= l.condition %>
-          </p>
-          <form method="POST" action="/farmer/initiate-booking/<%= l._id %>" class="flex gap-2 items-center">
-            <input type="number" name="days" placeholder="Days" class="border p-1 rounded w-20" min="1" required/>
-            <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="Book" data-mr="बुक करा">
-              Book
-            </button>
-          </form>
+        <div class="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden flex flex-col">
+          <div class="h-44 bg-cover bg-center" style="background-image:url('<%= imgUrl %>')"></div>
+
+          <div class="p-5 flex flex-col flex-1">
+            <h3 class="font-semibold text-lg mb-1 speakable">
+              <%= CATEGORY_TRANSLATIONS[l.name] || l.name %>
+            </h3>
+
+            <p class="text-sm text-slate-500 mb-1">
+              <%= CATEGORY_TRANSLATIONS[l.category] || l.category %> • <%= l.region %>
+            </p>
+
+            <p class="text-emerald-700 font-semibold mb-1">
+              ₹<%= l.pricePerDay %> / day
+            </p>
+
+            <p class="text-sm text-slate-500 mb-4">
+              Condition: <%= l.condition %>
+            </p>
+
+            <form method="POST" action="/farmer/initiate-booking/<%= l._id %>" class="mt-auto flex gap-2">
+              <input type="number"
+                     name="days"
+                     min="1"
+                     required
+                     placeholder="Days"
+                     class="border rounded-lg px-3 py-2 w-24"/>
+
+              <button class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition">
+                Book
+              </button>
+            </form>
+          </div>
         </div>
       <% }); %>
     </div>
   <% } else { %>
-    <div class="text-center py-8">
-      <p class="text-gray-500 speakable" data-en="No equipment found" data-mr="कोणतीही यंत्रसामग्री सापडली नाही">No equipment found</p>
-    </div>
+    <p class="text-center text-slate-500 py-10">No equipment found</p>
   <% } %>
 
-  <!-- Orders Panel -->
-  <div class="mt-12">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Your Orders" data-mr="आपल्या ऑर्डर्स">
-      Your Orders
-    </h2>
+  <!-- Orders -->
+  <div class="mt-16">
+    <h2 class="text-2xl font-bold mb-6 speakable">Your Orders</h2>
+
     <% if (bookings && bookings.length > 0) { %>
-      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-        <% bookings.forEach(function(booking) { %>
-          <% if (booking.status === 'confirmed') { %>
-            <div class="bg-white p-4 rounded-2xl shadow hover:shadow-xl transition flex flex-col">
-              <h3 class="font-bold text-lg text-gray-700 mb-1 speakable">Order for <%= booking.listing.name %></h3>
-              <p class="text-sm text-gray-500 mb-1 speakable">Seller: <%= booking.listing.sellerName %></p>
-              <p class="text-sm text-gray-600 font-medium mb-1 speakable">Amount: ₹<%= booking.amount %></p>
-              <p class="text-sm text-gray-500 mb-2 speakable">Days: <%= Math.round((booking.to - booking.from) / 86400000) %></p>
-              <button onclick="showOrderDetails('<%= JSON.stringify(booking) %>')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="View Details" data-mr="तपशील पहा">
-                View Details
-              </button>
-            </div>
-          <% } %>
-        <% }) %>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% bookings.forEach(function(booking) { if (booking.status === 'confirmed') { %>
+          <div class="bg-white rounded-2xl shadow p-5 hover:shadow-xl transition">
+            <h3 class="font-semibold mb-1">Order for <%= booking.listing.name %></h3>
+            <p class="text-sm text-slate-500">Seller: <%= booking.listing.sellerName %></p>
+            <p class="font-medium text-emerald-700 mt-2">₹<%= booking.amount %></p>
+            <p class="text-sm text-slate-500 mb-4">
+              Days: <%= Math.round((booking.to - booking.from) / 86400000) %>
+            </p>
+
+            <button onclick="showOrderDetails('<%= JSON.stringify(booking) %>')"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">
+              View Details
+            </button>
+          </div>
+        <% }}); %>
       </div>
     <% } else { %>
-      <div class="text-center py-8">
-        <p class="text-gray-500 speakable" data-en="No orders yet" data-mr="कोणतीही ऑर्डर्स नाहीत">No orders yet</p>
-      </div>
+      <p class="text-center text-slate-500 py-10">No orders yet</p>
     <% } %>
   </div>
 
-  <!-- Modal for Order Details -->
+  <!-- Modal -->
   <div id="orderModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
-      <h2 class="text-xl font-bold mb-4 speakable" data-en="Order Details" data-mr="ऑर्डर तपशील">Order Details</h2>
-      <p id="orderDetails" class="text-gray-700"></p>
+      <button class="float-right text-xl font-bold"
+              onclick="document.getElementById('orderModal').style.display='none'">×</button>
+      <h2 class="text-xl font-bold mb-4">Order Details</h2>
+      <p id="orderDetails" class="text-slate-700"></p>
     </div>
   </div>
 
@@ -142,22 +192,21 @@
 
 <script src="/js/speech.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     window.FarmChainSpeech.setLanguage('en');
   });
 
   function showOrderDetails(bookingJson) {
     const booking = JSON.parse(bookingJson);
-    const details = `
+    document.getElementById('orderDetails').innerHTML = `
       Booking ID: ${booking._id}<br>
-      Equipment: ${booking.listing.name} (Category: ${booking.listing.category}, Region: ${booking.listing.region})<br>
+      Equipment: ${booking.listing.name}<br>
       Seller: ${booking.listing.sellerName}<br>
       Days: ${(new Date(booking.to) - new Date(booking.from)) / 86400000}<br>
       Amount: ₹${booking.amount}<br>
       Tx Hash: ${booking.txHash}<br>
       Date: ${new Date(booking.createdAt).toLocaleString()}
     `;
-    document.getElementById('orderDetails').innerHTML = details;
     document.getElementById('orderModal').style.display = "block";
   }
 </script>

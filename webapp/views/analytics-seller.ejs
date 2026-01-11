@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Analytics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+
+<%- include('partials/header') %>
+
+<div class="max-w-5xl mx-auto px-6 py-12">
+
+  <h2 class="text-3xl font-semibold mb-6">
+    Seller Analytics
+  </h2>
+
+  <!-- Total Income -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+    <div class="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
+      <p class="text-sm text-slate-500 mb-2">Total Income</p>
+      <p class="text-3xl font-bold text-emerald-700">
+        ₹<%= totalIncome %>
+      </p>
+    </div>
+  </div>
+
+  <!-- Revenue by Machinery -->
+  <h3 class="text-xl font-semibold mb-4 text-slate-700">
+    Revenue by Machinery
+  </h3>
+
+  <div class="bg-white rounded-2xl shadow-md overflow-hidden">
+    <ul class="divide-y">
+      <% for (let m in machineRevenue) { %>
+        <li class="flex justify-between items-center px-6 py-4 hover:bg-slate-50 transition">
+          <span class="font-medium text-slate-700">
+            <%= m %>
+          </span>
+          <span class="text-sm font-semibold bg-emerald-100 text-emerald-700 px-4 py-1 rounded-full">
+            ₹<%= machineRevenue[m] %>
+          </span>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

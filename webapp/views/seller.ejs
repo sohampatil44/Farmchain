@@ -10,16 +10,18 @@
   <style>
     body { font-family: 'Inter', sans-serif; }
     [lang="mr"] { font-family: 'Noto Serif Devanagari', sans-serif; }
-    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
-    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; }
-    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
-    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+    .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fff; margin: 10% auto; padding: 20px; border-radius: 1rem; max-width: 600px; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: black; }
+    .lang-btn.active { background-color: #10b981; color: white; }
+    .lang-btn { border: 1px solid #ccc; padding: 0.5rem 1rem; border-radius: 0.5rem; margin-left: 0.5rem; cursor: pointer; }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen text-slate-800">
 
 <!-- Speech Controls -->
-<div id="speech-controls" class="speech-controls">
+<div id="speech-controls" class="speech-controls p-4">
   <div class="text-sm font-semibold mb-2" data-en="Text-to-Speech" data-mr="मजकूर-ते-भाषण">Text-to-Speech</div>
   <button id="stop-speech" class="speech-btn" data-en="Stop" data-mr="थांबवा">Stop</button>
   <button id="pause-speech" class="speech-btn" data-en="Pause" data-mr="विराम">Pause</button>
@@ -29,7 +31,7 @@
 <div class="max-w-5xl mx-auto py-10 px-4">
 
   <!-- Language Switcher -->
-  <div class="flex justify-between items-center mb-4">
+  <div class="flex justify-between items-center mb-6">
     <button 
       onclick="refreshListings()" 
       class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
@@ -42,78 +44,88 @@
     </div>
   </div>
 
-  <h1 class="text-3xl font-bold text-emerald-700 mb-8 text-center speakable" data-en="Seller Dashboard" data-mr="विक्रेता डॅशबोर्ड">
+  <!-- Page Heading -->
+  <h1 class="text-3xl font-semibold text-slate-800 mb-2 text-center speakable" data-en="Seller Dashboard" data-mr="विक्रेता डॅशबोर्ड">
     Seller Dashboard
   </h1>
 
-  <h2 class="text-lg mb-6 speakable" data-en="Welcome, <%= sellerName %>!" data-mr="आपले स्वागत आहे, <%= sellerName %>!">
+  <h2 class="text-base text-slate-500 mb-8 text-center speakable" data-en="Welcome, <%= sellerName %>!" data-mr="आपले स्वागत आहे, <%= sellerName %>!">
     Welcome, <%= sellerName %>!
   </h2>
+
+  <!-- Analytics Button -->
+  <div class="flex justify-center mb-10">
+    <a href="/seller/analytics"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl shadow-md transition">
+      📈 View Earnings Analytics
+    </a>
+  </div>
 
   <!-- Success/Error Messages -->
   <div id="message" class="hidden mb-4 p-4 rounded"></div>
 
   <!-- Add New Listing Form -->
-  <form action="/seller/add" method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-2xl shadow-lg mb-10">
-    <h2 class="text-xl font-semibold text-gray-800 mb-4 speakable" data-en="Add New Listing" data-mr="नवीन यंत्रसामग्री जोडा">
+  <form action="/seller/add" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-2xl shadow-md mb-12">
+    <h2 class="text-xl font-semibold text-slate-800 mb-6 speakable" data-en="Add New Listing" data-mr="नवीन यंत्रसामग्री जोडा">
       Add New Listing
     </h2>
-    <div class="grid sm:grid-cols-2 gap-4">
-      <input type="text" name="sellerName" placeholder="Seller Name" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
-      <input type="text" name="name" placeholder="Equipment Name" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
-      <select name="category" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+
+    <div class="grid sm:grid-cols-2 gap-5">
+      <input type="text" name="sellerName" placeholder="Seller Name" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <input type="text" name="name" placeholder="Equipment Name" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <select name="category" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
         <% CATEGORIES.forEach(c => { %>
           <option value="<%= c %>"><%= CATEGORY_TRANSLATIONS[c] || c %></option>
         <% }) %>
       </select>
-      <select name="region" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <select name="region" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
         <% REGIONS.forEach(r => { %>
           <option value="<%= r %>"><%= r %></option>
         <% }) %>
       </select>
-      <input type="number" id="pricePerDay" name="pricePerDay" placeholder="Price per day (₹)" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <input type="number" id="pricePerDay" name="pricePerDay" placeholder="Price per day (₹)" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
       <p id="priceError" class="text-red-500 text-sm mt-1"></p>
-      <input type="number" name="ageInYears" placeholder="Age of machinery (in years)" min="0" class="border p-3 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
-      <input type="file" name="img" accept="image/*" class="border p-3 col-span-2 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+      <input type="number" name="ageInYears" placeholder="Age of machinery (in years)" min="0" class="border border-slate-300 p-3 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none" required>
+      <input type="file" name="img" accept="image/*" class="border border-slate-300 p-3 col-span-2 rounded-xl focus:ring-2 focus:ring-emerald-400 focus:outline-none">
     </div>
-    <button type="submit" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl transition duration-300 speakable" data-en="Add Listing" data-mr="यंत्र जोडा">
+
+    <button type="submit" class="mt-6 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-xl transition duration-300 speakable" data-en="Add Listing" data-mr="यंत्र जोडा">
       Add Listing
     </button>
   </form>
 
   <!-- Seller Listings -->
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-2xl font-semibold text-gray-800 speakable" data-en="Your Listings" data-mr="आपली यंत्रसामग्री">
+    <h2 class="text-2xl font-semibold text-slate-800 speakable" data-en="Your Listings" data-mr="आपली यंत्रसामग्री">
       Your Listings
     </h2>
-    <div class="text-sm text-gray-600">
+    <div class="text-sm text-slate-500">
       Total: <span id="listings-count"><%= listings ? listings.length : 0 %></span> machines
     </div>
   </div>
-  
+
   <div id="listings-container" class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
     <% if (listings && listings.length) { %>
       <% listings.forEach(l => { 
            const imgUrl = l.img && l.img.trim() !== "" ? l.img : "https://via.placeholder.com/300x150"; 
       %>
-        <div class="listing-card bg-white p-4 rounded-2xl shadow hover:shadow-xl transition duration-300 flex flex-col" data-listing-id="<%= l.onChainId %>">
+        <div class="listing-card bg-white p-4 rounded-2xl shadow hover:shadow-lg transition duration-300 flex flex-col" data-listing-id="<%= l.onChainId %>">
           <div class="w-full h-40 bg-cover bg-center rounded-xl mb-4" style="background-image: url('<%= imgUrl %>');"></div>
           <div class="flex-1">
-            <h3 class="font-bold text-lg text-gray-700 speakable"><%= l.name %></h3>
-            <p class="text-sm text-gray-500 mb-1 speakable">
-              <%= CATEGORY_TRANSLATIONS[l.category] || l.category %> • <%= l.region %>
-            </p>
-            <p class="text-sm text-gray-600 font-medium speakable">₹<%= l.pricePerDay %>/day</p>
-            <p class="text-sm text-gray-500 mt-1 speakable">Seller: <%= l.sellerName || sellerName %></p>
-            <p class="text-sm text-gray-500 mt-1 speakable">Age: <%= l.ageInYears %> years</p>
+            <h3 class="font-bold text-lg text-slate-800 speakable"><%= l.name %></h3>
+            <p class="text-sm text-slate-500 mb-1 speakable"><%= CATEGORY_TRANSLATIONS[l.category] || l.category %> • <%= l.region %></p>
+            <p class="text-sm text-slate-600 font-medium speakable">₹<%= l.pricePerDay %>/day</p>
+            <p class="text-sm text-slate-500 mt-1 speakable">Seller: <%= l.sellerName || sellerName %></p>
+            <p class="text-sm text-slate-500 mt-1 speakable">Age: <%= l.ageInYears %> years</p>
           </div>
-          <span class="mt-2 inline-block px-3 py-1 text-xs font-semibold rounded-full <%= l.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : (l.status === 'declined' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') %> speakable">
+          <span class="mt-2 inline-block px-3 py-1 text-xs font-semibold rounded-full 
+            <%= l.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : (l.status === 'declined' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') %> speakable">
             <%= l.status %>
           </span>
         </div>
       <% }) %>
     <% } else { %>
-      <p class="col-span-full text-gray-500 text-center speakable" data-en="No listings available." data-mr="कोणतीही यंत्रसामग्री उपलब्ध नाही.">
+      <p class="col-span-full text-center text-slate-500 speakable" data-en="No listings available." data-mr="कोणतीही यंत्रसामग्री उपलब्ध नाही.">
         No listings available.
       </p>
     <% } %>
@@ -121,16 +133,16 @@
 
   <!-- Orders Panel -->
   <div class="mt-12">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4 speakable" data-en="Your Orders" data-mr="आपल्या ऑर्डर्स">
+    <h2 class="text-2xl font-semibold text-slate-800 mb-4 speakable" data-en="Your Orders" data-mr="आपल्या ऑर्डर्स">
       Your Orders
     </h2>
     <% if (orders && orders.length > 0) { %>
       <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         <% orders.forEach(function(order) { %>
-          <div class="bg-white p-4 rounded-2xl shadow hover:shadow-xl transition flex flex-col">
-            <h3 class="font-bold text-lg text-gray-700 mb-1 speakable">Order for <%= order.listing.name %></h3>
-            <p class="text-sm text-gray-500 mb-1 speakable">From: <%= order.farmer.name %></p>
-            <p class="text-sm text-gray-600 font-medium mb-2 speakable">Amount: ₹<%= order.amount %></p>
+          <div class="bg-white p-4 rounded-2xl shadow hover:shadow-lg transition flex flex-col">
+            <h3 class="font-bold text-lg text-slate-800 mb-1 speakable">Order for <%= order.listing.name %></h3>
+            <p class="text-sm text-slate-500 mb-1 speakable">From: <%= order.farmer.name %></p>
+            <p class="text-sm text-slate-600 font-medium mb-2 speakable">Amount: ₹<%= order.amount %></p>
             <button onclick="showOrderDetails('<%= JSON.stringify(order) %>')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded transition speakable" data-en="View Details" data-mr="तपशील पहा">
               View Details
             </button>
@@ -139,7 +151,7 @@
       </div>
     <% } else { %>
       <div class="text-center py-8">
-        <p class="text-gray-500 speakable" data-en="No orders yet" data-mr="कोणतीही ऑर्डर्स नाहीत">No orders yet</p>
+        <p class="text-slate-500 speakable" data-en="No orders yet" data-mr="कोणतीही ऑर्डर्स नाहीत">No orders yet</p>
       </div>
     <% } %>
   </div>
@@ -149,14 +161,14 @@
     <div class="modal-content">
       <span class="close" onclick="document.getElementById('orderModal').style.display='none'">&times;</span>
       <h2 class="text-xl font-bold mb-4 speakable" data-en="Order Details" data-mr="ऑर्डर तपशील">Order Details</h2>
-      <p id="orderDetails" class="text-gray-700"></p>
+      <p id="orderDetails" class="text-slate-700"></p>
     </div>
   </div>
+
 </div>
 
 <script src="/js/speech.js"></script>
 <script>
-  // Initialize speech functionality when page loads
   document.addEventListener('DOMContentLoaded', function() {
     window.FarmChainSpeech.setLanguage('en');
   });
@@ -165,7 +177,6 @@
   const priceInput = document.getElementById("pricePerDay");
   const equipmentInput = document.querySelector("input[name='name']");
   const priceError = document.getElementById("priceError");
-
   let timeout = null;
 
   priceInput.addEventListener("input", () => {
@@ -173,129 +184,67 @@
     timeout = setTimeout(() => {
       const price = priceInput.value;
       const equipment = equipmentInput.value;
-
-      if (!price || !equipment) {
-        priceError.textContent = "";
-        return;
-      }
-
+      if (!price || !equipment) { priceError.textContent = ""; return; }
       fetch("/seller/validate-price", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ equipment, price })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (!data.valid) {
-          priceError.textContent = data.message;
-        } else {
-          priceError.textContent = "";
-        }
-      })
-      .catch(err => {
-        priceError.textContent = "Error validating price";
-      });
-    }, 500); // debounce 0.5s
+      }).then(res => res.json()).then(data => {
+        priceError.textContent = data.valid ? "" : data.message;
+      }).catch(err => { priceError.textContent = "Error validating price"; });
+    }, 500);
   });
 
-  // Refresh listings
   function refreshListings() {
     const refreshBtn = document.querySelector('[onclick="refreshListings()"]');
-    refreshBtn.disabled = true;
-    refreshBtn.textContent = '🔄 Refreshing...';
-
-    fetch('/seller/refresh', {
-      method: 'GET',
-      credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        showMessage(`Updated! You have ${data.count} listings.`, 'success');
-        
-        // Update the count
-        document.getElementById('listings-count').textContent = data.count;
-        
-        // If there are differences, reload the page to show updated content
-        const currentCards = document.querySelectorAll('.listing-card').length;
-        if (currentCards !== data.count) {
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        }
-      } else {
-        showMessage('Error refreshing listings', 'error');
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      showMessage('Error refreshing listings', 'error');
-    })
-    .finally(() => {
-      refreshBtn.disabled = false;
-      refreshBtn.textContent = '🔄 Refresh';
-    });
+    refreshBtn.disabled = true; refreshBtn.textContent = '🔄 Refreshing...';
+    fetch('/seller/refresh', { method:'GET', credentials:'include' })
+      .then(r=>r.json())
+      .then(data=>{
+        if(data.success){
+          showMessage(`Updated! You have ${data.count} listings.`, 'success');
+          document.getElementById('listings-count').textContent = data.count;
+          if(document.querySelectorAll('.listing-card').length !== data.count){
+            setTimeout(()=>window.location.reload(), 1000);
+          }
+        } else { showMessage('Error refreshing listings','error'); }
+      }).catch(()=>showMessage('Error refreshing listings','error'))
+      .finally(()=>{ refreshBtn.disabled=false; refreshBtn.textContent='🔄 Refresh'; });
   }
 
-  function showMessage(text, type) {
+  function showMessage(text,type){
     const messageDiv = document.getElementById('message');
-    messageDiv.textContent = text;
-    messageDiv.className = `mb-4 p-4 rounded ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+    messageDiv.textContent=text;
+    messageDiv.className=`mb-4 p-4 rounded ${type==='success'?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}`;
     messageDiv.classList.remove('hidden');
-    
-    // Hide message after 3 seconds
-    setTimeout(() => {
-      messageDiv.classList.add('hidden');
-    }, 3000);
+    setTimeout(()=>messageDiv.classList.add('hidden'),3000);
   }
 
-  // Auto-refresh every 30 seconds to catch admin deletions
-  setInterval(() => {
-    fetch('/seller/refresh', {
-      method: 'GET',
-      credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        const currentCount = document.querySelectorAll('.listing-card').length;
-        const newCount = data.count;
-        
-        if (currentCount !== newCount) {
-          console.log(`Listings changed: ${currentCount} -> ${newCount}`);
-          showMessage('Your listings have been updated by admin', 'info');
-          
-          // Reload page after 2 seconds to show changes
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
+  setInterval(()=>{
+    fetch('/seller/refresh',{ method:'GET', credentials:'include' })
+      .then(r=>r.json())
+      .then(data=>{
+        if(data.success && document.querySelectorAll('.listing-card').length !== data.count){
+          showMessage('Your listings have been updated by admin','info');
+          setTimeout(()=>window.location.reload(),2000);
         }
-      }
-    })
-    .catch(error => {
-      console.log('Background refresh failed:', error);
-    });
-  }, 30000); // Check every 30 seconds
+      });
+  },30000);
 
-  function showOrderDetails(orderJson) {
-    const order = JSON.parse(orderJson);
-    const details = `
+  function showOrderDetails(orderJson){
+    const order=JSON.parse(orderJson);
+    const details=`
       Booking ID: ${order._id}<br>
       Farmer: ${order.farmer.name} (${order.farmer.email})<br>
       Listing: ${order.listing.name} (Category: ${order.listing.category}, Region: ${order.listing.region})<br>
-      Days: ${(new Date(order.to) - new Date(order.from)) / 86400000}<br>
+      Days: ${(new Date(order.to)-new Date(order.from))/86400000}<br>
       Amount: ₹${order.amount}<br>
       Tx Hash: ${order.txHash}<br>
       Date: ${new Date(order.createdAt).toLocaleString()}
     `;
-    document.getElementById('orderDetails').innerHTML = details;
-    document.getElementById('orderModal').style.display = "block";
+    document.getElementById('orderDetails').innerHTML=details;
+    document.getElementById('orderModal').style.display="block";
   }
 </script>
 </body>
 </html>
-```
-
-
-
-<xaiArtifact artifact_id="a1d5538f-dad0-4fc2-9e1c-0a3f0645f72b" artifact_version_id="f5ed5ee4-71e2-4ed9-b9ba-92c51778b963" title="seller.js" contentType="text/javascript">
