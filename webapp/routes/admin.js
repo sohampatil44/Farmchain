@@ -23,51 +23,51 @@ router.get("/", verifyToken, requireAdmin, async (req, res) => {
 router.post("/approve/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const listing = await Listing.findByIdAndUpdate(req.params.id, { status: "approved" }, { new: true });
-    if (!listing) return res.status(404).send("Listing not found");
+    if (!listing) return res.status(404).json({ success: false, message: "Listing not found" });
 
-    // Update AdminListing if exists
     await AdminListing.updateMany(
-      { listing: mongoose.Types.ObjectId(req.params.id) },
+      { listing: new mongoose.Types.ObjectId(req.params.id) },
       { status: "approved" }
     );
 
     console.log("Approved listing:", listing);
-    res.redirect("/admin");
+    return res.json({ success: true, message: "Listing approved successfully" }); // ✅
   } catch (error) {
     console.error("Error approving listing:", error);
-    res.status(500).send("Error approving listing");
+    return res.status(500).json({ success: false, message: "Error approving listing" }); // ✅
   }
 });
+
 
 // POST /admin/decline/:id
 router.post("/decline/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const listing = await Listing.findByIdAndUpdate(req.params.id, { status: "declined" }, { new: true });
-    if (!listing) return res.status(404).send("Listing not found");
+    if (!listing) return res.status(404).json({ success: false, message: "Listing not found" });
 
-    // Update AdminListing if exists
     await AdminListing.updateMany(
-      { listing: mongoose.Types.ObjectId(req.params.id) },
+      { listing: new mongoose.Types.ObjectId(req.params.id) },
       { status: "declined" }
     );
 
     console.log("Declined listing:", listing);
-    res.redirect("/admin");
+    return res.json({ success: true, message: "Listing declined successfully" }); // ✅
   } catch (error) {
     console.error("Error declining listing:", error);
-    res.status(500).send("Error declining listing");
+    return res.status(500).json({ success: false, message: "Error declining listing" }); // ✅
   }
 });
 
+
+// POST /admin/delete/:id
 // POST /admin/delete/:id
 router.post("/delete/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const listingId = req.params.id;
     console.log("Attempting to delete listing with ID:", listingId);
 
-    // Find listing first
     const listing = await Listing.findById(listingId);
-    if (!listing) return res.status(404).send("Listing not found");
+    if (!listing) return res.status(404).json({ success: false, message: "Listing not found" });
 
     console.log("Found listing to delete:", {
       id: listing._id,
@@ -76,29 +76,18 @@ router.post("/delete/:id", verifyToken, requireAdmin, async (req, res) => {
       sellerName: listing.sellerName
     });
 
-    // Delete Listing
-    const result = await Listing.findByIdAndDelete(listingId);
+    await Listing.findByIdAndDelete(listingId);
+    await AdminListing.deleteMany({ listing: new mongoose.Types.ObjectId(listingId) });
 
-    // Delete associated AdminListing entries
-    await AdminListing.deleteMany({ listing: mongoose.Types.ObjectId(listingId) });
-    console.log("Deleted associated AdminListing entries for:", listingId);
+    console.log("Deleted listing and associated AdminListing entries");
+    return res.json({ success: true, message: "Listing deleted successfully" });
 
-    if (result) {
-      if (req.headers['content-type'] === 'application/json' || req.headers.accept?.includes('application/json')) {
-        return res.json({ success: true, message: "Listing deleted successfully" });
-      }
-     
-    } else {
-      res.status(404).send("Listing not found");
-    }
   } catch (error) {
     console.error("Error deleting listing:", error);
-    if (req.headers['content-type'] === 'application/json' || req.headers.accept?.includes('application/json')) {
-      return res.status(500).json({ success: false, message: "Error deleting listing" });
-    }
-    res.status(500).send("Error deleting listing");
+    return res.status(500).json({ success: false, message: "Error deleting listing" });
   }
 });
+
 
 // GET /admin/edit/:id
 router.get("/edit/:id", verifyToken, requireAdmin, async (req, res) => {

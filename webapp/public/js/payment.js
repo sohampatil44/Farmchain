@@ -2,7 +2,7 @@
 const { ethers } = window;
 
 // Replace these with your deployed contract details
-const contractAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const abi = [
   {
     "anonymous": false,
@@ -10,20 +10,51 @@ const abi = [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "rentPrice",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "sharePrice",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "farmer",
+        "name": "owner",
         "type": "address"
-      },
+      }
+    ],
+    "name": "MachineryListed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "numDays",
+        "name": "id",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "renter",
+        "type": "address"
       },
       {
         "indexed": false,
@@ -32,23 +63,163 @@ const abi = [
         "type": "uint256"
       }
     ],
-    "name": "Rented",
+    "name": "MachineryRented",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MachineryShared",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "getMachineries",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "id",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rentPrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "sharePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "owner",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct FarmMachinery.Machinery[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_rentPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_sharePrice",
+        "type": "uint256"
+      }
+    ],
+    "name": "listMachinery",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "listingId",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "machineries",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "rentPrice",
         "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "numDays",
+        "name": "sharePrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "machineryCounter",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
         "type": "uint256"
       }
     ],
-    "name": "rent",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_machineryId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "_rent",
+        "type": "bool"
+      }
+    ],
+    "name": "rentOrShareMachinery",
     "outputs": [],
     "stateMutability": "payable",
     "type": "function"
@@ -93,14 +264,17 @@ async function payWithMethod(method, bookingId, amountINR, days, listingId) {
     }
 
     // 🔹 INR → ETH conversion
-    const amountETH = (amountINR / ethPriceINR).toString();
+    const amountETH = (amountINR / ethPriceINR).toFixed(8); // limit to 8 decimals
     const amountWei = ethers.utils.parseEther(amountETH);
+
 
     // 🔹 Init contract
     const contract = new ethers.Contract(contractAddress, abi, signer);
 
     // 🔹 Ensure numeric IDs
-    const numericListingId = Number(listingId);
+    const numericListingId = Number(listingId) - 1;
+    console.log("Original listingId:", listingId, "→ Blockchain ID:", numericListingId);
+
     const numericDays = Number(days);
 
     if (isNaN(numericListingId) || numericListingId <= 0) {
@@ -110,8 +284,12 @@ async function payWithMethod(method, bookingId, amountINR, days, listingId) {
       throw new Error("Invalid number of days passed from frontend");
     }
 
-    // 🔹 Send transaction
-    const tx = await contract.rent(numericListingId, numericDays, { value: amountWei });
+    // 🔹 Fetch blockchain price and use it
+    const machinery = await contract.machineries(numericListingId);
+    const rentPrice = machinery.rentPrice;
+
+    // 🔹 Send transaction with blockchain price
+    const tx = await contract.rentOrShareMachinery(numericListingId, true, { value: rentPrice });
     statusElement.innerText = "Transaction pending...";
 
     await tx.wait();

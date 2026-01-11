@@ -1,0 +1,9 @@
+ethers.utils.formatEther(_)
+await ethers.provider.getBalance("0x90F79bf6EB2c4f870365E785982E1f101E93b906")
+ethers.formatEther(balance)
+balance = await ethers.provider.getBalance("0x5FbDB2315678afecb367f032d93F642f64180aa3")
+});
+    value: ethers.utils.parseEther("100") // give 100 ETH
+    to: "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+await funder.sendTransaction({
+const [funder] = await ethers.getSigners(); // default first account

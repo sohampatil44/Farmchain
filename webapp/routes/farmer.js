@@ -45,10 +45,14 @@ router.get("/", verifyToken, requireFarmer, async (req, res) => {
         if (query) filter.name = { $regex: query, $options: "i" };
 
         const listings = await Listing.find(filter).populate("owner");
-        const bookings = await Booking.find({ farmer: req.user.userId }).populate({
+        let bookings = await Booking.find({ farmer: req.user.userId }).populate({
             path: "listing",
             populate: { path: "owner" }
         });
+        
+        // 🧹 Remove bookings that have missing listings
+        bookings = bookings.filter(b => b.listing !== null);
+        
 
         res.render("farmer", {
             farmerName,
